@@ -3,10 +3,12 @@ title: "Cyber Apocalypse 2025"
 date: 2025-03-26 12:00:00 +0700
 categories: [CTF, Cyber Apocalypse 2025]
 tags: [Hackthebox, forensics]
-image: /assets/images/banner.jpg
+image: /assets/images2/banner.jpg
+toc: true
+layout: post
 ---
 
-# _A new hire_ _(FORSENSICS)_
+## _A new hire_ _(FORSENSICS)_
  
  ![image](https://github.com/user-attachments/assets/e9725ec1-0825-45f3-b533-a3cb000b9160)
  
@@ -66,7 +68,7 @@ image: /assets/images/banner.jpg
  HTB{4PT_28_4nd_m1cr0s0ft_s34rch=1n1t14l_4cc3s!!}
  ```
 
-# _Thorin’s Amulet_ _(FORSENSICS)_
+## _Thorin’s Amulet_ _(FORSENSICS)_
 
 ![image](https://github.com/user-attachments/assets/1f8fd6b4-c229-4ca2-aa4e-ce5120d5db9e)
 
@@ -116,37 +118,37 @@ Decode là nhận được flag
 HTB{7h0R1N_H45_4lW4Y5_833n_4N_9r347_1NV3n70r}
 ```
 
-# _Stealth Invasion_ _(FORSENSICS)_
+## _Stealth Invasion_ _(FORSENSICS)_
 
 ![image](https://github.com/user-attachments/assets/cf31068e-2c57-45e6-abe8-f1d8833dbef8)
 
 Bài cho file memdump.elf, lần đầu mình gặp file dump mà đuôi là elf nên liền check file cái đã
 
-![image](assets/images/19.png)
+![image](assets/images2/19.png)
 
 Vẫn đúng là file dump bth thôi, giờ dùng volatility để phân tích
 
->1. What is the PID of the Original (First) Google Chrome process:
+>**1.** What is the PID of the Original (First) Google Chrome process:
 
 Câu này dùng plugin windows.pslist
 
-![image](assets/images/20.png)
+![image](assets/images2/20.png)
 
 ```
 Answer: 4080
 ```
 
->2. What is the only Folder on the Desktop
+>**2.** What is the only Folder on the Desktop
 
 Câu này dùng windows.filescan | grep desktop
 
-![image](assets/images/21.png)
+![image](assets/images2/21.png)
 
 ```
 Answer: malext
 ```
 
-> 3. What is the Extention's ID (ex: hlkenndednhfkekhgcdicdfddnkalmdm)
+>**3.** What is the Extention's ID (ex: hlkenndednhfkekhgcdicdfddnkalmdm)
 
 Thấy trên `desktop` có được 1 số file `.js`, dump thử về xem sao (vì mình `grep` ID mãi mà nhập vô không đúng)
 
@@ -226,27 +228,27 @@ document.addEventListener("paste", (event) => {
 ```
 Script trên là một phần của `Chrome Extensions`, nó như một `Keylogger` dùng để lưu lại lịch sử nhấn phím của người dùng. Hỏi chatgpt thì mình có được vị trí lưu
 
-![image](assets/images/22.png)
+![image](assets/images2/22.png)
 
 
-![image](assets/images/23.png)
+![image](assets/images2/23.png)
 
 ```
 Answer: nnjofihdjilebhiiemfmdlpbdkbjcpae
 ```
 
->4. After examining the malicious extention's code, what is the log filename in which the datais stored
+>**4.** After examining the malicious extention's code, what is the log filename in which the datais stored
 
 Ngay hình trên lấy được 1 tệp `.log`
 
 ```
 Answer: 000003.log
 ```
->5. What is the URL the user navigated to
+>**5.** What is the URL the user navigated to
 
 Mình dumpfiles `000003.log` về, tệp log này ghi lại lịch sử nhấn phím người dùng bởi `malicious extensions` ở trên
 
-![image](assets/images/24.png)
+![image](assets/images2/24.png)
 
 Có thể thấy người dùng truy cập vào drive.google.com rồi thực hiện login, nên từ đây có thể lấy được luôn đáp án cho câu 6
 
@@ -254,15 +256,15 @@ Có thể thấy người dùng truy cập vào drive.google.com rồi thực hi
 Answer: drive.google.com
 ```
 
->6. What is the password of selene@rangers.eldoria.com
+>**6.** What is the password of selene@rangers.eldoria.com
 
-![image](assets/images/25.png)
+![image](assets/images2/25.png)
 
 ```
 Answer: clip-mummify-proofs
 ```
 
-# _Silent Trap_ _(FORSENSICS)_
+## _Silent Trap_ _(FORSENSICS)_
 
 ![image](https://github.com/user-attachments/assets/4b3da520-f51c-4f57-8c1e-fa0b1c4b8d3d)
 
@@ -272,7 +274,7 @@ Bài cho file pcapng, phân tích và trả lời 6 câu hỏi
 
 Follow HTTP stream 4, thấy được cuộc giao tiếp giữa client và server
 
-![image](assets/images/5.png)
+![image](assets/images2/5.png)
 
 Thực hiện GET request xem trước email (_action=preview) trong hộp thư đến (_mbox=INBOX) với UID 71 => opened
 
@@ -287,7 +289,7 @@ Answer: Game Crash on Level 5
 
 Lúc đang làm thì mình ngồi xem HTTP stream 1, thấy có một GET request lấy danh sách email trong hộp thư đến, server sẽ response danh sách dưới dạng json
 
-![image](assets/images/6.png)
+![image](assets/images2/6.png)
 
 Mình thấy được 1 email với tiêu đề `Bug Report - In-game Imbalance Issue in Eldoria`, Eldoria có gì đó giống với tên giải nên mình lấy luôn time của cái email đó
 
@@ -303,21 +305,21 @@ Answer: 2025-02-24_15:46
 
 Export object HTTP, thấy có 1 file zip, khả năng đây sẽ chứa malware
 
-![image](assets/images/7.png)
+![image](assets/images2/7.png)
 
 Save về không unzip được, thử crack cũng kh được, thì khả năng mật khẩu sẽ đc tìm thấy trong pcap
 
 Mình tìm đến stream 8, xem cuộc hội thoại giữa client và server về email liên quan đến malware kia
 
-![image](assets/images/8.png)
+![image](assets/images2/8.png)
 
 Mình đoán sẽ có pass unzip ở trong này, thử tìm password thì ra
 
-![image](assets/images/9.png)
+![image](assets/images2/9.png)
 
 Unzip nhận được 1 file `Eldoria_Balance_Issue_Report.pdf.exe`
 
-![image](assets/images/10.png)
+![image](assets/images2/10.png)
 
 ```
 Answer: c0b37994963cc0aadd6e78a256c51547
@@ -329,17 +331,17 @@ Lúc mới vào làm, thì mình thấy có khá nhiều packet, nên có hỏi 
 
 Thử lọc IMAP thì có đc luôn username và password
 
-![image](assets/images/11.png)
+![image](assets/images2/11.png)
 
 Hoặc là có thể reverse con `malware` kia, `.Net` mình dùng dotpeek để decomplie
 
-![image](assets/images/12.png)
+![image](assets/images2/12.png)
 
 Chương trình trên viết bằng `C#` để kết nối đến `IMAP server` sử dụng giao thức `TCP` và `SSL/TLS`
 
 Nhìn vào hàm creds, đây là hàm lưu thông tin đăng nhập để có thể xác thực với máy chủ email `mail.korptech.net`
 
-![image](assets/images/13.png)
+![image](assets/images2/13.png)
 
 ```
 Answer: proplayer@email.com:completed
@@ -348,7 +350,7 @@ Answer: proplayer@email.com:completed
 
 Khi làm thì mình cần tìm câu trả lời càng sớm càng tốt, nên đã kiểu đoán mò khá nhiều, mình đã follow hết các stream liên quan đến IMAP nhưng kh thấy có task scheduled nào của attacker, nên mình nghĩ khả năng rất cao là nó nằm trong đống bị mã hóa này
 
-![image](assets/images/14.png)
+![image](assets/images2/14.png)
 
 Từ đây mình sẽ đi vào phân tích đoạn code C#, chú ý đến các hàm sau
 
@@ -399,7 +401,7 @@ Hàm `execute` thực hiện cố gắng kết nối đến máy chủ email b�
 
 Tiếp theo là hàm mã hóa xor
 
-![image](assets/images/15.png)
+![image](assets/images2/15.png)
 
 Hàm sử dụng một mảng byte cố định gồm 256 phần tử làm khóa (key)
 
@@ -508,9 +510,9 @@ print(decrypted.decode(errors="ignore"))
 ```
 Data lấy tại luồng tcp.stream 35
 
-![image](assets/images/16.png)
+![image](assets/images2/16.png)
 
-![image](assets/images/17.png)
+![image](assets/images2/17.png)
 
 ```
 Answer: Synchronization
@@ -519,26 +521,28 @@ Answer: Synchronization
 
 Vẫn tiếp tục là lấy data đem decode, thì ở stream 97 sẽ có được đáp án
 
-![image](assets/images/18.png)
+![image](assets/images2/18.png)
 
 ```
 Answer: sk-3498fwe09r8fw3f98fw9832fw
 ```
 
-# _Cave Expedition_ _(FORSENSICS)_
+## _Cave Expedition_ _(FORSENSICS)_
+
+![image](assets/images2/57.png)
 
 
 Bài cho tất cả các folder `LOG` chứa rất nhiều tệp
 
 Dùng tool Evtxcmd để trích xuất hết ra csv hoặc json rồi ngồi lọc thôi
 
-![image](assets/images/1.png)
+![image](assets/images2/1.png)
 
 Mình đã ngồi lọc hết các log dư thừa, chỉ giữ lại một số lệnh powershell thực thi
 
 Ví dụ
 
-![image](assets/images/2.png)
+![image](assets/images2/2.png)
 
 Tiếp theo là trích xuất hết đoạn nằm trong commandline khá giống base64 rồi đem đi decode ra được đoạn mã ps1 sau
 
@@ -642,7 +646,7 @@ if ($env:USERNAME -eq "developer56546756" -and $env:COMPUTERNAME -eq "Workstatio
 ```
 Decode base64 hàm `k34Vm` và `m78Vo` ra được thông điệp của attacker
 
-![image](assets/images/3.png)
+![image](assets/images2/3.png)
 Giờ sẽ đi vào phân tích kĩ đoạn pws trên
 
 Chương trình thực hiện mã hóa Xor 2 lần với 2 key bị base64 encrypt
@@ -711,34 +715,34 @@ try {
 
 Mở powershell chạy script là done
 
-![image](assets/images/4.png)
+![image](assets/images2/4.png)
 
 ```
 HTB{Dunl0rn_dRAk3_LA1r_15_n0W_5AF3}
 ```
 
-# _TOOLPIE_ _(FORENSICS)_
+## _TOOLPIE_ _(FORENSICS)_
 ![image](https://github.com/user-attachments/assets/74acfcd7-04ac-4e90-a6f0-1e72c11cbf41)
 
 Bài cho 1 file pcapng, nhiệm vụ là phân tích và trả lời 6 câu hỏi
 
-![image](assets/images/45.png)
+![image](assets/images2/45.png)
 
 Mới đầu vào, mình follow tcp.stream, vì chỉ có 6 luồng nên mình sẽ ngồi phân tích hết
 
 Đầu tiên là stream 0, thấy được 1 GET request từ IP 194.59.6.66 đến 1 HOST: 13.61.177.227, với yêu cả trả về trang chủ của 1 trang web
 
-![image](assets/images/46.png)
+![image](assets/images2/46.png)
 
 Trong phần nav của trang web có 2 liên kết là idex.html và script.html
 
 Kết hợp với đó là mình export objects HTML và save all
 
-![image](assets/images/47.png)
+![image](assets/images2/47.png)
 
 Ta thử truy cập vào script.html xem sao
 
-![image](assets/images/48.png)
+![image](assets/images2/48.png)
 
 Đây giống như là một trang web cho người dùng thực hiện nhập mã Python rồi nhấn Execute để thực thi
 
@@ -746,13 +750,13 @@ Chưa có gì đặc biệt lắm, nên cùng đi đến với stream thứ 1
 
 Tiếp tục là GET request từ 194.59.6.66 đối với server và ở gần cuối có 1 lệnh GET request tới /script.html
 
-![image](assets/images/49.png)
+![image](assets/images2/49.png)
 
 Khi ng dùng nhập mã và thực thi trên trang này thì nó sẽ gửi 1 yêu cầu POST/execute đến server
 
 Và ngay sau đó là stream 3, vẫn tiếp tục là IP đó đã nhập mã và thực thi, nhìn script Python này uy tín vcl :v
 
-![image](assets/images/50.png)
+![image](assets/images2/50.png)
 
 Sau đó, stream 4 thì server đã thực hiện gửi `ec2amaz-bktvi3e\administrator` và có những phản hồi từ 1 IP __khác__ là 13.61.7.128. Đến đây mình sẽ có 1 số nhận định sau
 
@@ -775,11 +779,11 @@ Tiếp theo, mình sẽ đi phân tích ở đoạn mã Python mà attacker đã
 
 Giải nén xong, mình đã đưa về được file `.pyc` nhưng kh thể đưa về mã nguồn `.py` được, sau đó AI có hỗ trợ mình có thể đưa về bytecode
 
-![image](assets/images/51.png)
+![image](assets/images2/51.png)
 
 Ngồi đọc 1 lúc, thì mình thấy được đáp án cho câu 3
 
-![image](assets/images/52.png)
+![image](assets/images2/52.png)
 
 ```
 3. What is the name of the obfuscation tool used by the attacker?
@@ -870,7 +874,7 @@ Sau khi kết nối tới C2 server xong thì thực hiện:
 
 - Thông tin này được gửi tới server cùng với khóa ngẫu nhiên (user + SEPARATOR + k), k chính là khóa để thực hiện mã hóa AES-CBC như trong script trên. Từ đây có câu trả lời cho câu 5\
 
-![image](assets/images/53.png)
+![image](assets/images2/53.png)
 
 ```
 5. What encryption key did the attacker use to secure the data?
@@ -881,7 +885,7 @@ Answer: 5UUfizsRsP7oOCAq
 
 Mình sẽ dùng key đó để decrypt dữ liệu gửi đi tại đây là sẽ có đáp án cho câu 6
 
-![image](assets/images/54.png)
+![image](assets/images2/54.png)
 
 Lấy dữ liệu ở dạng Raw, rồi lưu vào 1 file riêng
 
@@ -920,11 +924,11 @@ key = "5UUfizsRsP7oOCAq"        # Key giống lúc mã hóa
 decrypt_file(input_file, output_file, key)
 ```
 
-![image](assets/images/55.png)
+![image](assets/images2/55.png)
 
 Check MD5
 
-![image](assets/images/56.png)
+![image](assets/images2/56.png)
 
 ```
 6, What is the MD5 hash of the file exfiltrated by the attacker?
@@ -953,15 +957,15 @@ Answer: 5UUfizsRsP7oOCAq
 Answer: 8fde053c8e79cf7e03599d559f90b321
 ```
 
-# _Tales for the Brave_ _(Forensics)_
+## _Tales for the Brave_ _(Forensics)_
 
 - Mới vào mình nhận được 1 đoạn `javascript` bị obsfuscate
 
-![image](assets/images/26.png)
+![image](assets/images2/26.png)
 
 Tiến hành  `deobf` bằng https://lelinhtinh.github.io/de4js/
 
-![image](assets/images/27.png)
+![image](assets/images2/27.png)
 
 Giải thích sơ qua chút:
 
@@ -1002,22 +1006,22 @@ for i, item in enumerate(output):
     print(f"[{i}] = {item}")
 ```
 
-![image](assets/images/28.png)
+![image](assets/images2/28.png)
 
 `Ví dụ: CryptoJS[_$_9b39[4]][_$_9b39[3]][_$_9b39[2]] = CryptoJS.enc.Base64.parse`
 
 - Tiếp theo, đoạn `ciphertext` bị `AES encrypt` và `Base64 encode` nên gọi các hàm ra để giải mã rồi dùng `eval` để thực thi trực tiếp
-![image](assets/images/29.png)
+![image](assets/images2/29.png)
 - `Key` và `IV` được lấy tại đây
-![image](assets/images/30.png)
+![image](assets/images2/30.png)
 
 Dùng python để decrypt toàn bộ (hoặc có thể dùng `Java compiler online`) nhưng mình cũng không hiểu sao có một số chỗ bị lỗi khi decrypt hmm
 
-![image](assets/images/31.png)
+![image](assets/images2/31.png)
 
 Tiếp tục dùng `de4js` để deobf
 
-![image](assets/images/32.png)
+![image](assets/images2/32.png)
 
 Chức năng nó khá tương tự đoạn `java` vừa nãy và sau khi deobf toàn bộ thì có được đoạn mã sau:
 
@@ -1121,9 +1125,9 @@ for (var i = 0; i < checkboxes.length; i++) {
 Tóm tắt code:
 
 - Đoạn code trên giải mã một `enc_token` là `nZiIjaXAVuzO4aBCf5eQ5ifQI7rUBI3qy/5t0Djf0pG+tCL3Y2bKBCFIf3TZ0Q==` bằng `RC4 drop` với key được xử lí thông qua hàm `G()`
-  ![image](assets/images/33.png)
+  ![image](assets/images2/33.png)
 - Tham số được truyền vào trong hàm `G()` là `s3cur3k3y`
-  ![image](assets/images/34.png)
+  ![image](assets/images2/34.png)
 
 Ta tiến hành decode `Key` bằng `python`
 
@@ -1177,44 +1181,44 @@ expected = G(special)
 print(f"G('{special}') =", expected)
 ```
 
-![image](assets/images/35.png)
+![image](assets/images2/35.png)
 
 Có được key là `0p3r4t10n_4PT_Un10n`, lấy key đó giải mã đoạn `enc_token` ta được một token của một `botTelegram`
 
-![image](assets/images/36.png)
+![image](assets/images2/36.png)
 
 Mình dùng tool [này](https://github.com/soxoj/telegram-bot-dumper) để dump toàn bộ `message` của bot
 
 `Bot` gửi cho mình 1 file `.zip` trong `media` và kèm cả `pass` để giải nén. Nó chú thích thêm là chỉ nhắm tới `Brave Browser users` nên tiến hành tải trình duyệt `Brave` về
 
-![image](assets/images/37.png)
+![image](assets/images2/37.png)
 
 Đến đây mình phải tham khảo `writeups` thì mới làm được tiếp, nôm na thì reverse malware sẽ không khả thi nên tiến hành debug động bằng cách thực thi trực tiếp trên máy ảo và bật `wireshark` để bắt gói tin
 
-![image](assets/images/38.png)
+![image](assets/images2/38.png)
 
 Nó thực hiện truy vấn `DNS` đến tên miền `zolsc2s65u.htb` trên port `31337`, giờ ta sẽ đi fake `IP` bằng địa chỉ loopback là `127.0.0.1` và `domain` bằng cách thêm chúng vào `/etc/hosts`
 
-![image](assets/images/39.png)
+![image](assets/images2/39.png)
 
 Sau đó khởi chạy một server http
 
-![image](assets/images/40.png)
+![image](assets/images2/40.png)
 
 Tiến hành mở chạy lại `malware` và mở `wireshark`
 
-![image](assets/images/41.png)
+![image](assets/images2/41.png)
 
 Thấy được 1 `HTTP Post.Request`, trong đó có 1 đoạn `Bearer Token`
 
-![image](assets/images/42.png)
+![image](assets/images2/42.png)
 
 Đây là một `JWT (Json Web Token)` dùng để xác thực người dùng, dùng https://jwt.io/ để decode token
 
-![image](assets/images/43.png)
+![image](assets/images2/43.png)
 
 Trong phần `auth` có một đoạn base64, tiến hành decode là nhận được flag
 
-![image](assets/images/44.png)
+![image](assets/images2/44.png)
 
 `Flag: HTB{APT_c0nsp1r4c13s_b3h1nd_b3n1gn_l00k1ng_s1t3s}`
