@@ -273,7 +273,7 @@ if __name__ == "__main__":
 
 - IP (attacker): 192.168.200.132
 - Ports: HTTP 8000 (ingress/tool transfer & exfil), TCP 4444 (reverse shell)
-- URL: http://192.168.200.132:8000/Test.ps1
+- URL: http://192.168.200.132:8 000/Test.ps1
 - HTTP POST target: http://192.168.200.132:8000/ (exfil via POST)
 
 #### Host / Files
