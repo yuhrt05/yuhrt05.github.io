@@ -2,7 +2,7 @@
 title: "DFIR 02: Fileless Attack and Forensics"
 date: 2026-02-15 03:00:00 +0700
 categories: [CTF, PicoCTF]
-tags: [forensics]
+tags: [Memory analysis, Volatility, Metasploit, Fileless Malware, .NET]
 image: /assets/images9/banner.jpg
 toc: true
 layout: post

