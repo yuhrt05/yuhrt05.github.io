@@ -107,6 +107,7 @@ Example: MCTF{CVE-2017-0144_SERVER-01_admin_192.168.1.10_12:34}
 
 ### Solution
 
+`Flag: MCTF{CVE-2025-33073_PURGE-SRV1_shardesty_198.51.100.2_38:24}`
 ## POST-MORTEM ARTIFACTS (2/3)
 
 ### Description
@@ -124,6 +125,7 @@ Example: MCTF{some-feature_SERVER-01_25:47}
 ```
 ### Solution
 
+`Flag: MCTF{constrained-delegation_PURGE-SRV2_43:11}`
 ## POST-MORTEM ARTIFACTS (3/3)
 
 ### Description
@@ -132,4 +134,10 @@ Example: MCTF{some-feature_SERVER-01_25:47}
 
 ### Solution
 
+`Flag: MCTF{sloomis_16_51:56}`
+
 ## Gh0st_1n_7h3_G1t
+
+### Solution
+
+`Flag: MCTF{Th1S_Is_Y0uR_f7rst_P@rt0x_F1n@l_P4rt$}`
