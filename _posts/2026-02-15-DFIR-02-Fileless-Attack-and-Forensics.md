@@ -1,6 +1,6 @@
 ---
-title: "DFIR LAB 02: Fileless Attack and Forensics"
-date: 2026-02-16 03:00:00 +0700
+title: "DFIR 02: Fileless Attack and Forensics"
+date: 2026-02-15 03:00:00 +0700
 categories: [CTF, PicoCTF]
 tags: [forensics]
 image: /assets/images9/banner.jpg
