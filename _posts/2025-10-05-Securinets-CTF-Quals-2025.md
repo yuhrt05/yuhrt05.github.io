@@ -27,11 +27,11 @@ https://drive.google.com/file/d/1Vxd6M50--nzqK-9snaj1oujwK7va26Tx/view
 
 Thử thách cung cấp cho ta file `ad1` và file `mem`, theo thói quen mình mở file `ad1` bằng `FTK imager`, tại `C:/[root]/Documents and Settings/RagdollFan2005/Desktop` thấy file `to_encrypt.txt.enc` nghi đã bị encode bởi con `locker_sim.exe`
 
-![image](assets/images7/1.png)
+![image](/assets/images7/1.png)
 
 Tải về và `upload` lên virustotal xác minh thì chính xác đây là con `malware` rồi
 
-![image](assets/images7/2.png)
+![image](/assets/images7/2.png)
 
 Mình dùng `ida` để xem cách nó hoạt động, 
 
@@ -191,19 +191,19 @@ Chương trình tạo khóa `AES-256` từ `argv[1]`, `tên máy` và nội dung
 
 - File `secret_part.txt` đã bị xóa và mình đã tìm thấy nó trong `recycle bin`
 
-![image](assets/images7/3.png)
+![image](/assets/images7/3.png)
 
 >Part 1: sigmadroid
 
 - Về tên máy thì ta dễ dàng tìm được trong `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName`
 
-![image](assets/images7/4.png)
+![image](/assets/images7/4.png)
 
 >Part 2: RAGDOLLF-F9AC5A
 
 - Phần cuối là, tham số `argv[1]` được truyền vào khi thực thi chương trình, phần này mình sẽ check trong file `mem` còn lại được cung cấp
 
-![image](assets/images7/5.png)
+![image](/assets/images7/5.png)
 
 >Part 3: hmmisitreallyts
 
@@ -241,11 +241,11 @@ def decrypt_file(arg1: str):
 if __name__ == "__main__":
     sys.exit(decrypt_file(sys.argv[1]) if len(sys.argv)==2 else print("Usage: python simple_decrypt.py <arg>") or 1)
 ```
-![image](assets/images7/6.png)
+![image](/assets/images7/6.png)
 
 Nội dung là chuỗi `b64`, decode 5 lần là ra
 
-![image](assets/images7/7.png)
+![image](/assets/images7/7.png)
 
 `FLAG: Securinets{screen+registry+mft??}`
 
@@ -272,7 +272,7 @@ Bài cung cấp cho ta file `ad1`, tiến hành nc vào server và trả lời c
 
 #### 2. Identify the OS build number of the victim’s system?
 
-![image](assets/images7/8.png)
+![image](/assets/images7/8.png)
 
 `Answer: 19045`
 
@@ -280,19 +280,19 @@ Bài cung cấp cho ta file `ad1`, tiến hành nc vào server và trả lời c
 
 `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{GUID}`
 
-![image](assets/images7/9.png)
+![image](/assets/images7/9.png)
 
 `Answer: 192.168.206.131`
 
 #### 4. What is the name of the email application used by the victim?
 
-![image](assets/images7/10.png)
+![image](/assets/images7/10.png)
 
 `Answer: Thunderbird`
 
 #### 5. What is the email of the victim?
 
-![image](assets/images7/11.png)
+![image](/assets/images7/11.png)
 
 `Answer: ammar55221133@gmail.com`
 
@@ -302,13 +302,13 @@ Bài cung cấp cho ta file `ad1`, tiến hành nc vào server và trả lời c
 
 #### 7. What is the URL that the attacker used to deliver the malware to the victim?
 
-![image](assets/images7/12.png)
+![image](/assets/images7/12.png)
 
 Truy cập đường link `github`, tại `packet.json` thấy có một đường link `powershell` thực thi
 
-![image](assets/images7/13.png)
+![image](/assets/images7/13.png)
 
-![image](assets/images7/14.png)
+![image](/assets/images7/14.png)
 
 `Answer: https://tmpfiles.org/dl/23860773/sys.exe`
 
@@ -316,13 +316,13 @@ Truy cập đường link `github`, tại `packet.json` thấy có một đườ
 
 Từ đây sẽ `solve` bằng `virustotal`
 
-![image](assets/images7/15.png)
+![image](/assets/images7/15.png)
 
 `Answer: be4f01b3d537b17c5ba7dc1bb7cd4078251364398565a0ca1e96982cff820b6d`
 
 #### 9. What is the IP address of the C2 server that the malware communicates with?
 
-![image](assets/images7/16.png)
+![image](/assets/images7/16.png)
 
 `Answer: 40.113.161.85`
 
@@ -332,33 +332,33 @@ Từ đây sẽ `solve` bằng `virustotal`
 
 #### 11. What is the url if the first Request made by the malware to the c2 server?
 
-![image](assets/images7/17.png)
+![image](/assets/images7/17.png)
 
 `Answer: http://40.113.161.85:5000/helppppiscofebabe23`
 
 #### 12. The malware created a file to identify itself. What is the content of that file?
 
-![image](assets/images7/18.png)
+![image](/assets/images7/18.png)
 
-![image](assets/images7/19.png)
+![image](/assets/images7/19.png)
 
 `Answer: 3649ba90-266f-48e1-960c-b908e1f28aef`
 
 #### 13. Which registry key did the malware modify or add to maintain persistence?
 
-![image](assets/images7/20.png)
+![image](/assets/images7/20.png)
 
 `Answer: HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\MyApp`
 
 #### 14. What is the content of this registry?
 
-![image](assets/images7/21.png)
+![image](/assets/images7/21.png)
 
 `Answer: C:\Users\ammar\Documents\sys.exe`
 
 #### 15. The malware uses a secret token to communicate with the C2 server. What is the value of this key?
 
-![image](assets/images7/22.png)
+![image](/assets/images7/22.png)
 
 `Answer: e7bcc0ba5fb1dc9cc09460baaa2a6986`
 
@@ -427,20 +427,20 @@ https://drive.google.com/drive/folders/1LI6ntsr9iD53D2bnCEv7YDt_bJSrrlWH
 
 ### Solution
 
-![image](assets/images7/23.png)
+![image](/assets/images7/23.png)
 
 Duyệt qua thư mục `Desktop`, ban đầu nhận định các file ảnh đã bị mã hóa, duyệt qua xem kiếm được con `malware` nào không thì không thấy gì, chú ý đến file `powershell_history.txt` có liên quan đến việc `clone` đường link github rồi thực thi `a.py`
 
-![image](assets/images7/24.png)
+![image](/assets/images7/24.png)
 
 
-![image](assets/images7/25.png)
+![image](/assets/images7/25.png)
 
 Truy cập vô theo đường link đấy xem có gì, thì thấy `app.py` không có gì, chú ý tếp có 1 file `pyc`, dùng tool này để đọc mã. Code rất dài nên mình sẽ để tại [đây](https://pylingual.io/view_chimera?identifier=c7315705657072e330645ca41e743b320d70c5ddbc5d3d118644595ad293f3d1), tuy nhiên chức năng chính của đoạn mã sẽ là nó nhận dữ liệu được gửi qua `DNS` (từng phần trong tên miền `.asba`), ghép thành file `.rar`, giải nén ra `a.exe` rồi chạy — cho phép `hacker` điều khiển máy nạn nhân chỉ qua `DNS traffic`.
 
 Để ý thấy bài cũng cho mình file `pcap`, mở file pcap, filter riêng `DNS` thì thấy tại `stream.eq = 32` có dấu hiệu truy vấn `DNS` lạ, khá khớp với những gì đoạn mã trên vừa thực hiện, nhưng đã đổi `.asba` thành `meow`. Mình nhờ AI gen script để tái tạo lại file `exe`
 
-![image](assets/images7/26.png)
+![image](/assets/images7/26.png)
 
 ```python
 #!/usr/bin/env python3
@@ -521,11 +521,11 @@ if __name__ == '__main__':
     main()
 ```
 
-![image](assets/images7/27.png)
+![image](/assets/images7/27.png)
 
 Thấy được file được `pack` bằng `upx`, tiến hành `unpack`
 
-![image](assets/images7/28.png)
+![image](/assets/images7/28.png)
 
 Tiếp theo mình dùng `ida` để `reverse`
 
@@ -570,7 +570,7 @@ int __cdecl sub_401460(const char *a1, int a2, int a3)
 
 Hàm này tạo một `seed` 32 bit bằng cách `Xor` các byte của chuỗi a1 và mảng byte `byte_40B200` rồi chạy một LCG `(v=1664525*v+1013904223)` để sinh dãy và ghi byte thấp của mỗi trạng thái vào `buffer` tại `a2` dài `a3`
 
-![image](assets/images7/29.png)
+![image](/assets/images7/29.png)
 
 `KEY: evilsecretcodeforevilsecretencryption`
 
@@ -764,8 +764,8 @@ if __name__ == '__main__':
     main()
 ```
 
-![image](assets/images7/30.png)
+![image](/assets/images7/30.png)
 
-![image](assets/images7/31.png)
+![image](/assets/images7/31.png)
 
 `FLAG: Securinets{D4t_W4snt_H4rd_1_Hope}`
