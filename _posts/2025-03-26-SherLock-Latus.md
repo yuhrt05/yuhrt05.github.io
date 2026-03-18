@@ -1,7 +1,7 @@
 ---
-title: "SherLock: Latus"
+title: "HackTheBox: Latus"
 date: 2025-05-31 14:22:00 +0700
-categories: [SherLock, HackTheBox]
+categories: [SherLock]
 tags: [Hackthebox, forensics]
 image: /assets/images3/banner.jpg
 toc: true

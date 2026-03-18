@@ -1,7 +1,7 @@
 ---
 title: "Midnight Flag CTF 2026"
 date: 2026-03-16 03:00:00 +0700
-categories: [CTF, Midnight Flag CTF]
+categories: [CTF]
 tags: [Threat Hunting, Log analysis, CVE-2024-9264, CVE-2025-33073]
 image: /assets/images10/banner.png
 toc: true

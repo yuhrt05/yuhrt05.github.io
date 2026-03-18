@@ -2,7 +2,7 @@
 title: "Securinets CTF Quals 2025"
 permalink: /posts/securinets-ctf-quals-2025/
 date: 2025-10-05 12:00:00 +0700
-categories: [CTF, Securinets CTF Quals 2025]
+categories: [CTF]
 tags: [forensics]
 image: /assets/images7/banner.png
 toc: true

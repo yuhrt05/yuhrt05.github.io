@@ -1,7 +1,7 @@
 ---
 title: "Cyber Apocalypse 2025"
 date: 2025-03-26 12:00:00 +0700
-categories: [CTF, Cyber Apocalypse 2025]
+categories: [CTF]
 tags: [Hackthebox, forensics]
 image: /assets/images2/banner.jpg
 toc: true
