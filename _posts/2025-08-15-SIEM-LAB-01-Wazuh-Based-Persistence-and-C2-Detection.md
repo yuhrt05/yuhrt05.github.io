@@ -1,5 +1,5 @@
 ---
-title: "LAB 01: Wazuh-Based Persistence & C2 Detection"
+title: "SIEM LAB 01: Wazuh-Based Persistence & C2 Detection"
 date: 2025-08-15 03:00:00 +0700
 categories: [SIEM LAB]
 tags: [forensics]
