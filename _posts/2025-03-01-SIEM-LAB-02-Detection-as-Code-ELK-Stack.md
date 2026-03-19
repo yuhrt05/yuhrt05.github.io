@@ -1,5 +1,5 @@
 ---
-title: "SIEM LAB 02: Xây dựng mô hình DaC mini với ELK Stack"
+title: "SIEM LAB 02: Xây dựng hệ thống Detections as Code (DaC) mini với ELK Stack"
 date: 2026-03-01 03:00:00 +0700
 categories: [SIEM LAB]
 tags: [ELK Stack, Detections as Code, Python Scripting, Elastic Security, Sigma Rules, BotTelegram]
