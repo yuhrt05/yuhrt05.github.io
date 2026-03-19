@@ -12,8 +12,6 @@ layout: post
 
 Hệ thống được thiết kế theo tư duy **Detections as Code**, nhằm chuẩn hóa việc xây dựng, kiểm thử và triển khai các Sigma Rules giống như quy trình phát triển phần mềm. Toàn bộ pipeline từ viết rule → kiểm thử → triển khai → giám sát → cảnh báo đều được tự động hóa, đảm bảo tính nhất quán, khả năng mở rộng và dễ audit.
 
-Kiến trúc tổng thể được chia thành nhiều layer rõ ràng, giúp tách biệt trách nhiệm và giảm rủi ro khi vận hành trong môi trường thực tế (SOC / Blue Team).
-
 ---
 
 ## Workflows
