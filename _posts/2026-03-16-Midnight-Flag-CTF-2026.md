@@ -76,12 +76,9 @@ Tiến hành trace ngược lại các dòng log được thực thi lệnh xoay
 
 => user thực hiện malicious actions là `editor2`
 
-`Flag: MCTF{CVE-2024-9264:/var/lib/grafana/ctf/secret.csv:85.215.144.254:editor2}`
+`Flag: MCTF{CVE-2024-9264:/var/lib/grafana/ctf/secret.csv:85.215.144.254:editor2}`  
 
 # POST-MORTEM ARTIFACTS SERIES
-
-#### Không có thói quen lưu lại timeline của quá trình phân tích log nên giờ mấy ảnh chụp khá nhập nhằng và cái cần thì lại quên kh chụp nên đợi BTC mở lại server đã :))
-#### Có tổng 3 challenge, solve được 1 challenge thì mới mở challenge tiếp theo
 
 ## POST-MORTEM ARTIFACTS (1/3)
 
@@ -108,6 +105,31 @@ Example: MCTF{CVE-2017-0144_SERVER-01_admin_192.168.1.10_12:34}
 
 ### Solution
 
+Quá trình threat hunting đã ghi nhận được một số truy vấn DNS lạ 
+
+
+![image](/assets/images10/16.png)
+
+Tiến hành research CVE xem có cái nào liên quan không thì tại [đây](https://blog.syss.com/posts/kerberos-reflection/) có một CVE nói về vấn đề này cụ thể:
+
+```
+Lỗ hổng CVE-2025-33073 (Kerberos Relaying/Reflection over SMB). Kẻ tấn công lợi dụng điểm yếu trong cơ chế xử lý Service Principal Name (SPN) bằng cách nhúng một payload đã mã hóa vào thẳng hostname. Dấu hiệu nhận diện đặc trưng (IoC) của lỗ hổng này là các truy vấn DNS chứa chuỗi 1UWhRCA... (đây là cấu trúc CREDENTIAL_TARGET_INFORMATIONA được mã hóa).
+```
+Dựa trên cơ sở lý thuyết này, tiến hành đối chiếu với các Artifacts thu thập được trên Kibana, ta có thể tái tạo lại toàn bộ chuỗi khai thác và giải mã 5 phần của Flag:
+
+`Part 1 (CVE used)`: Dựa vào signature của chuỗi truy vấn DNS độc hại ghi nhận được trong log, khớp chính xác với kỹ thuật SPN Unmarshaling của CVE-2025-33073.
+
+`Part 2 (Compromised Server)`: Phân tích sự kiện truy vấn DNS trong log là `purge-srv11UWhRCAAAAAAAAAAAAAAAAAAAAAAAAAAAAwbEAYBAAAA)`, bằng cách loại bỏ phần payload mã hóa phía sau, ta trích xuất được mục tiêu bị nhắm tới để Authentication Coercion và Kerberos Reflection là máy chủ `PURGE-SRV1`.
+
+`Part 3 (Username)`: Như trong bài viết có nhắc đến, ta xác định được rằng lỗ hổng chỉ được thực thi khi attacker phải có được `initial access` vào một `user` bất kì nằm trong `domain`. Tiến hành trace ngược lại và phát hiện được 1 bản ghi xác nhận 1 phiên đăng nhập thành công đến từ `kali-victus`
+
+![image](/assets/images10/17.png)
+
+
+`Part 4 (Executor IP)`: Kiểm tra log DNS để xem bản ghi độc hại trên phân giải về địa chỉ nào, hoặc đối chiếu với Event ID 4624 trên máy purge-srv1 tại thời điểm xảy ra truy vấn để tìm Source IP (như hình trên). Địa chỉ IP của kẻ tấn công được ghi nhận là `198.51.100.2`
+
+`Part 5 (Time)`: Dựa vào trường @timestampcủa log ghi nhận sự kiện khai thác kích hoạt (như trong Kibana: Jan 19, 2026 @ 22:38:24.073), ta lấy được chính xác phút và giây là 38:24.
+
 `Flag: MCTF{CVE-2025-33073_PURGE-SRV1_shardesty_198.51.100.2_38:24}`
 ## POST-MORTEM ARTIFACTS (2/3)
 
@@ -126,7 +148,57 @@ Example: MCTF{some-feature_SERVER-01_25:47}
 ```
 ### Solution
 
+#### part 1: Name of the AD feature abused for lateral movement 
+
+Nhận thấy được sau khi chiếm được quyền `NT AUTHORITY\SYSTEM` trên `purge-srv1`, attacker dư sức để dump được NTLM Hash hoặc AES Key của chính tài khoản máy tính này. Chúng dùng key đó để chứng thực với Domain Controller và lấy về TGT hợp lệ
+
+![image](/assets/images10/18.png)
+
+Tiếp theo attacker dùng TGT vừa lấy được yêu cầu một Service Ticket để truy cập vào chính nó
+`Service Name: PURGE-SRV1$`
+
+![image](/assets/images10/19.png)
+
+- Đây có thể là bước `S4U2self`. Phần mở rộng này cho phép một dịch vụ như `PURGE-SRV1$` xin vé đại diện cho một user bất kỳ trong Domain (thường là Domain Admin hoặc user có quyền cao trên máy mục tiêu tiếp theo) mà không cần mật khẩu của user đó
+- DC chấp thuận cấp vé với `Failure Code: 0x0` có nghĩa là quá trình chuyển đổi giao thức  đã thành công. Attacker giờ đã có một vé mạo danh một user đặc quyền, nhưng vé này hiện tại chỉ có tác dụng trên chính `PURGE-SRV1`
+
+Tiếp nữa, attacker gửi yêu cầu thứ 3. Lần này, mục tiêu truy cập Service Name đã thay đổi thành `PURGE-SRV2$`
+
+![image](/assets/images10/20.png)
+
+
+- Đây là bước `S4U2proxy`. Kẻ tấn công trình cái vé mạo danh (vừa lấy được ở bước S4U2self) cho Domain Controller nhằm yêu cầu cho phép user này truy cập vào `PURGE-SRV2` thông qua sự ủy quyền của `PURGE-SRV1`
+    - Việc trường `Transited Services` được ghi nhận chứng tỏ DC đã truy vết chuỗi ủy quyền này.
+    - Do DC trả về Failure Code: 0x0 , điều này xác nhận rằng `PURGE-SRV1$` đã được cấu hình Delegation tới `PURGE-SRV2$`
+
+=> Sau một hồi research thì biết được attacker đã lợi dụng một lỗi cấu hình trong `AD feature` nhằm `lateral movement` mà không thông qua bước xác thực người dùng. Bài viết tại đây [Attacking Kerberos Constrained Delegation](https://medium.com/r3d-buck3t/attacking-kerberos-constrained-delegations-4a0eddc5bb13)
+
+=> part 1: `constrained-delegation`
+
+#### part 2: Name of the server compromised using this feature
+
+`PURGE-SRV2`
+
+#### part 3: Minutes and seconds of the start of the attack, before the feature was abused (MM:SS)
+
+Tiến hành trace ngược lại các log ở phía trước thì thấy được các lần login thành công 
+
+Câu này mình sẽ tìm thời điểm mà attacker leo quyền thành công của chính tài khoản máy tính Domain Controller (PURGE-DC$) vào máy chủ purge-srv1 (thông qua Event ID 4624)
+
+![image](/assets/images10/21.png)
+
+Cụ thể, tại mốc thời gian `22:43:11`, hệ thống ghi nhận một sự kiện đăng nhập mạng (Logon Type 3) bất thường:
+
+- Account Name: PURGE-DC$
+- Source Network Address: 127.0.0.1 (IP Loopback)
+- Logon GUID: {85f141af-027f-cb6e-3218-5b76702672bf}
+
+Dấu vết `127.0.0.1` khẳng định kẻ tấn công đang thực hiện Relay xác thực ngay trên máy chủ đã chiếm quyền (PURGE-SRV1). Bằng cách ép DC xác thực ngược lại mình, attacker đã chuyển tiếp (relay) phiên đăng nhập đó vào dịch vụ LDAP của Domain Controller để bí mật ghi đè thuộc tính `msDS-AllowedToActOnBehalfOfOtherIdentity` của máy chủ mục tiêu. (đây chỉ là phỏng đoán vì không có log ghi lại việc ghi đè thuộc tính)
+
+=> part3: `43:11`
+
 `Flag: MCTF{constrained-delegation_PURGE-SRV2_43:11}`
+
 ## POST-MORTEM ARTIFACTS (3/3)
 
 ### Description
@@ -134,6 +206,22 @@ Example: MCTF{some-feature_SERVER-01_25:47}
 ![image](/assets/images10/6.jpg)
 
 ### Solution
+
+![image](/assets/images10/21.png)
+
+#### part 1: Name of the compromised account?
+
+Dựa trên log Event ID `4768` ghi nhận tại thời điểm `22:51:56`, hệ thống phát hiện yêu cầu cấp vé `TGT` cho tài khoản `sloomis`. Đây là tài khoản quản trị viên đích mà kẻ thực thi nhắm tới để chiếm toàn quyền kiểm soát miền purge.local
+
+#### part 2: Code of the authentication method used for the domain admin access?
+
+Tại trường `Pre-Authentication Type` của log trên, mã phương thức được sử dụng là `16`
+
+- Giải thích: Mã 16 đại diện cho giao thức PKINIT (Kerberos Public Key Cryptography for Initial Authentication). Thay vì sử dụng mật khẩu NTLM truyền thống, kẻ tấn công đã sử dụng một cặp khóa (Public/Private Key) hoặc Chứng chỉ số để xác thực với Domain Controller.
+
+#### part 3: Minutes and seconds(MM:SS) of the exactly moment that access was established?
+
+`51:56`
 
 `Flag: MCTF{sloomis_16_51:56}`
 
