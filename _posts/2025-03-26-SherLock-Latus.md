@@ -1,5 +1,5 @@
 ---
-title: "HackTheBox: Latus"
+title: "Sherlock: Latus [Hard]"
 date: 2025-05-31 14:22:00 +0700
 categories: [SherLock]
 tags: [Hackthebox, forensics]
