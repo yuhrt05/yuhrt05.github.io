@@ -256,4 +256,25 @@ Trong tất cả các connections thì thấy đây là connect sus nhất
 
 `Answer: 18.192.12.126:8888`
 
+## MITRE ATT&CK
+
+| Tactics | Techniques / Sub-techniques | ID | Behavior |
+|----------------------|------------------------------------------------------|----|---------------------------------------------------|
+| Initial Access | Phishing: Spearphishing Link / Attachment | T1566.002 / T1566.001 | Người dùng tải xuống file shortcut 2025-GiveAways.lnk ngụy trang dưới dạng chương trình trúng thưởng. |
+| Execution | User Execution: Malicious File | T1204.002 | Người dùng thao tác thủ công (double-click) để kích hoạt file shortcut độc hại. |
+| Execution | Command and Scripting Interpreter: PowerShell | T1059.001 | Tệp .lnk kích hoạt powershell.exe với đoạn script đi kèm (-Command) để khởi tạo thư mục và tải mã độc. |
+| Defense Evasion | Masquerading: Match Legitimate Name or Location | T1036.005 | Đổi tên payload thành svch0st.exe (thay 'o' bằng số '0') để giả mạo tiến trình hệ thống; tạo shortcut giả mạo file PDF (Ultimate-Guide-to-Running-Giveaways.pdf.lnk). |
+| Defense Evasion | Hide Artifacts: Hidden Window | T1564.003 | Script PowerShell sử dụng tham số -WindowStyle Hidden để chạy ngầm, không hiển thị cửa sổ console cho người dùng. |
+| Defense Evasion | Hijack Execution Flow: DLL Side-Loading | T1574.002 | Khai thác tiến trình hợp lệ của YandexBrowser (browser.exe version 24.4.5.498) để nạp tệp thư viện độc hại wldp.dll từ cùng thư mục. |
+| Defense Evasion | Virtualization/Sandbox Evasion: Time Based Evasion | T1497.003 | Mã độc C2 (yanda.tmp) sử dụng hàm Sleep() mã hóa hai khoảng thời gian (10,000 ms và 1,000 ms) tạo độ trễ 11,000 ms trước khi trả shell để vượt qua phân tích động của Sandbox. |
+| Discovery | Software Discovery | T1518 | Sử dụng PowerShell cmdlet Get-Package để liệt kê các phần mềm đã cài đặt trên máy, nhắm mục tiêu tìm YandexBrowser. |
+| Discovery | System Owner/User Discovery | T1033 | Thực thi WHOAMI.EXE để xác nhận đặc quyền và định danh tài khoản hiện tại. |
+| Discovery | System Information Discovery | T1082 | Gọi SYSTEMINFO.EXE thu thập thông tin chi tiết về hệ điều hành, cấu hình mạng và các bản vá. |
+| Discovery | Account Discovery: Local Account | T1087.001 | Chạy NET.EXE / NET1.EXE nhằm liệt kê các tài khoản và nhóm bảo mật cục bộ. |
+| Discovery | System Network Connections Discovery | T1049 | Sử dụng NETSTAT.EXE để rà quét các cổng đang mở và các phiên kết nối mạng hiện hành. |
+| Discovery | Scheduled Task/Job Discovery | T1053 | Thực thi TASKS / SCHTASKS.EXE rà soát các tác vụ tự động nhằm tìm kiếm vị trí thiết lập Persistence. |
+| Command and Control | Ingress Tool Transfer | T1105 | Dùng Invoke-WebRequest tải payload svch0st.exe; lợi dụng LOLBin Certutil.exe tải PE file wldp.dll vào thư mục cache rồi di chuyển sang thư mục Yandex. |
+| Command and Control | Application Layer Protocol: Web Protocols | T1071.001 | Framework C2 (Sliver) thiết lập giao tiếp và truyền tải lệnh thông qua các giao thức web tiêu chuẩn (HTTP/HTTPS). |
+| Command and Control | Non-Standard Port | T1571 | Beacon kết nối ngược về C2 server (IP 18.192.12.126) qua cổng 8888 nhằm lẩn tránh các bộ lọc giám sát cổng tiêu chuẩn. |
+
 #### Done. Very good disk forensics challenge!!!
