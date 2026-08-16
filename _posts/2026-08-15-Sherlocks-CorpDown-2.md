@@ -1,6 +1,6 @@
 ---
 title: "Sherlock: CorpDown-2 [Hard]"
-date: 2026-07-15 07:22:00 +0700
+date: 2026-08-15 07:22:00 +0700
 categories: [SherLock]
 tags: [HackTheBox, Sherlock, DFIR, Lateral Movement, Keylogging, Privilege Escalation, Active Directory, WinSCP, NTFS Forensics]
 image: /assets/images3/banner.jpg

@@ -1,6 +1,6 @@
 ---
 title: "Sherlock: JobApplicant! [Hard]"
-date: 2026-07-15 07:22:00 +0700
+date: 2026-08-10 07:22:00 +0700
 categories: [SherLock]
 tags: [HackTheBox, Sherlock, DFIR, log analysis, DCsync, kerberoasting, ACL]
 image: /assets/images3/banner.jpg
