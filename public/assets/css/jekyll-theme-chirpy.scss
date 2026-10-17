@@ -1,0 +1,127 @@
+---
+---
+
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
+
+/* append your custom style below */
+
+@mixin cyberpunk {
+  /* =========================================
+     CHỈNH SỬA MÀU CHỮ (DARK MODE)
+     Nếu muốn thay đổi màu chữ, hãy sửa các mã màu Hex ở dưới đây:
+     ========================================= */
+  --text-color: #f8f9fa !important;         /* Màu chữ chung của văn bản (hiện tại: Trắng sáng) */
+  --text-muted-color: #9ca3af !important;   /* Màu chữ phụ/mờ (Màu xám) */
+  --heading-color: #ffffff !important;      /* Màu chữ của các Tiêu đề (H1, H2, H3...) (Trắng tinh) */
+
+  /* Dim the post descriptions so the titles pop out more */
+  .post-preview p {
+    color: #9ca3af !important;
+  }
+
+  /* Background Image */
+  body {
+    background-image: url('/assets/bg.jpg') !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+    background-size: cover !important;
+    text-shadow: 0 1px 4px #000 !important;
+    color: #ffffff !important;
+  }
+
+  #main-wrapper, footer, #topbar-wrapper, #topbar, #sidebar,
+  #archives ul li, #archives ul li:nth-child(odd),
+  .list-group-item, .card-header,
+  #search, #search-wrapper, #search-input, #search-hints, #search-results {
+    background: transparent !important;
+  }
+
+  /* Glassmorphism for Cards & Sidebar Nav & Code Blocks & Tables */
+  .card-wrapper, .card,
+  #sidebar .nav-item.active .nav-link,
+  #sidebar .nav-item .nav-link:hover,
+  div.highlighter-rouge,
+  .table-wrapper {
+    background: rgba(0, 0, 0, 0.65) !important; /* Darker smoked glass */
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 12px !important;
+    overflow: hidden; /* Ensure rounded corners clip the images */
+  }
+
+  .table-wrapper {
+    overflow-x: auto !important; /* Restore horizontal scroll for tables */
+  }
+
+  .post-preview, .card-body,
+  .code-header, .highlight, div.highlighter-rouge pre,
+  table, thead, tbody, tr, th, td, tr:nth-child(even), tr:nth-child(odd) {
+    background: transparent !important;
+  }
+
+  .post-preview img, .preview-img {
+    border-radius: 0 !important;
+  }
+
+  /* Swap image to the left, text to the right on cards */
+  .post-preview.flex-md-row-reverse {
+    flex-direction: row !important;
+  }
+
+  #toc-wrapper::before, #toc-wrapper::after, .toc-border-cover {
+    display: none !important;
+    background: transparent !important;
+  }
+
+  /* Add a separator line below ## (h2) headings in content */
+  .content h2 {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    padding-bottom: 0.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Sleek Gradient Vertical Divider for Sidebar */
+  #sidebar {
+    border-right: none !important;
+  }
+
+  #sidebar::after {
+    content: "";
+    position: absolute;
+    top: 15%; /* start slightly lower */
+    bottom: 15%; /* end slightly higher (leaves about 70% height line) */
+    right: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25), transparent);
+  }
+
+  /* Cyberpunk Inline Code */
+  p > code, li > code, a > code, th > code, td > code {
+    color: #00e5ff !important; /* Neon cyan for maximum visibility */
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    padding: 0.15rem 0.35rem !important;
+    border-radius: 4px !important;
+    border: 1px solid rgba(0, 229, 255, 0.2) !important;
+  }
+}
+
+/* Kích hoạt Cyberpunk khi bật chế độ Dark Mode bằng tay */
+[data-mode="dark"] {
+  @include cyberpunk;
+}
+
+/* Kích hoạt Cyberpunk tự động nếu HĐH/Trình duyệt đang ở chế độ Dark Mode (và chưa bật Light mode) */
+@media (prefers-color-scheme: dark) {
+  html:not([data-mode="light"]) {
+    @include cyberpunk;
+  }
+}
+
+

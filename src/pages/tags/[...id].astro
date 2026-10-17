@@ -1,44 +1,52 @@
 ---
-import BlogCard from "@/components/BlogCard.astro"
-import MetaPage from "@/components/MetaPage.astro"
-import Layout from "@/layouts/Layout.astro"
-import { getTags } from "@/lib/content"
-import type { CollectionEntry } from "astro:content"
+import BlogCard from '@/components/BlogCard.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import { getAllTags, getPostsByTag } from '@/lib/data-utils'
 
 export async function getStaticPaths() {
-  const tags = await getTags()
-  return [...tags].map(([tag, posts]) => ({
-    params: { id: tag },
-    props: { tag, posts },
-  }))
-}
+  const tagMap = await getAllTags()
+  const uniqueTags = Array.from(tagMap.keys())
 
-type Props = { tag: string; posts: CollectionEntry<"blog">[] }
+  return Promise.all(
+    uniqueTags.map(async (tag) => {
+      const posts = await getPostsByTag(tag)
+      return {
+        params: { id: tag },
+        props: {
+          tag,
+          posts,
+        },
+      }
+    }),
+  )
+}
 
 const { tag, posts } = Astro.props
 ---
 
-<Layout
-  crumbs={[
-    { label: "Tags", href: "/tags" },
-    { label: `#${tag}`, href: `/tags/${tag}` },
-  ]}
->
-  <MetaPage
+<Layout class="max-w-3xl">
+  <PageHead
     slot="head"
-    title={`Posts tagged "${tag}"`}
+    title={`Posts tagged with "${tag}"`}
     description={`A collection of posts tagged with ${tag}.`}
     noindex
   />
-  <ul>
-    {posts.map((post) => <BlogCard post={post} />)}
+  <Breadcrumbs
+    items={[
+      { href: '/tags', label: 'Tags', icon: 'lucide:tags' },
+      { label: tag, icon: 'lucide:tag' },
+    ]}
+  />
+
+  <ul class="flex flex-col gap-y-4">
+    {
+      posts.map((post) => (
+        <li>
+          <BlogCard entry={post} />
+        </li>
+      ))
+    }
   </ul>
 </Layout>
-
-<style>
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-m);
-  }
-</style>

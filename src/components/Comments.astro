@@ -1,0 +1,75 @@
+---
+import { COMMENT } from '@/consts'
+---
+
+<div class="mt-10">
+  <section class="giscus mx-auto mt-10 w-full"></section>
+</div>
+
+<script is:inline define:vars={{ COMMENT }}>
+  const getTheme = () => {
+    const theme = localStorage.getItem('theme')
+    return theme === 'dark' ? 'dark' : 'light'
+  }
+
+  const setGiscusTheme = () => {
+    const theme = getTheme()
+    const giscus = document.querySelector('.giscus-frame')
+    if (giscus) {
+      const url = new URL(giscus.src)
+      url.searchParams.set('theme', theme)
+      giscus.src = url.toString()
+    }
+  }
+
+  const loadGiscus = () => {
+    const script = document.createElement('script')
+    script.src = 'https://giscus.app/client.js'
+    script.setAttribute('data-repo', COMMENT.repo)
+    script.setAttribute('data-repo-id', COMMENT.repoId)
+    script.setAttribute('data-category', COMMENT.category)
+    script.setAttribute('data-category-id', COMMENT.categoryId)
+    script.setAttribute('data-mapping', 'pathname')
+    script.setAttribute('data-strict', '0')
+    script.setAttribute('data-reactions-enabled', '1')
+    script.setAttribute('data-emit-metadata', '0')
+    script.setAttribute('data-input-position', 'bottom')
+    script.setAttribute('data-theme', getTheme())
+    script.setAttribute('data-lang', 'en')
+    script.setAttribute('crossorigin', 'anonymous')
+    script.setAttribute('async', '')
+    
+    const container = document.querySelector('.giscus')
+    if (container) {
+      container.appendChild(script)
+    }
+  }
+
+  // Load on initial page load
+  loadGiscus()
+
+  // Handle re-renders (Astro View Transitions)
+  document.addEventListener('astro:page-load', () => {
+    const giscus = document.querySelector('.giscus-frame')
+    if (!giscus) {
+      loadGiscus()
+    }
+  })
+
+  // Theme observer
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (
+        mutation.type === 'attributes' &&
+        mutation.attributeName === 'data-theme'
+      ) {
+        setGiscusTheme()
+      }
+    })
+  })
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  })
+</script>

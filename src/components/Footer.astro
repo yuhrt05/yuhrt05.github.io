@@ -1,31 +1,16 @@
 ---
-import SocialIcons from "@/components/SocialIcons.astro"
-import { SITE, SOCIALS } from "@/consts"
+import { Separator } from '@/components/ui/separator'
+import { SOCIAL_LINKS } from '@/consts'
+import Link from './Link.astro'
+import SocialIcons from './SocialIcons.astro'
 ---
 
-<footer>
-  <p>
-    &copy; {new Date().getFullYear()}
-    {SITE.title}
-  </p>
-  <SocialIcons links={SOCIALS} />
+<footer
+  class="mx-auto mb-8 flex w-full max-w-4xl flex-col items-center justify-center gap-y-3 px-4 pt-6 pb-4 sm:mb-4 sm:flex-row sm:justify-between font-mono text-xs border-t border-border/40 text-muted-foreground"
+>
+  <div class="flex flex-wrap items-center justify-center gap-x-2 text-center">
+    <span>
+      &copy; {new Date().getFullYear()} ANe.
+  </div>
+  <SocialIcons links={SOCIAL_LINKS} />
 </footer>
-
-<style>
-  footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-block: var(--space-xs) var(--page-offset-bottom);
-
-    @media (width >= 40rem) {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-
-    p {
-      font-size: var(--step--1);
-      color: var(--muted-foreground);
-    }
-  }
-</style>

@@ -1,0 +1,73 @@
+---
+import BlogCard from '@/components/BlogCard.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import PaginationComponent from '@/components/ui/pagination'
+import { SITE } from '@/consts'
+import Layout from '@/layouts/Layout.astro'
+import { getAllPosts, groupPostsByYear } from '@/lib/data-utils'
+import type { PaginateFunction } from 'astro'
+
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: PaginateFunction
+}) {
+  const allPosts = await getAllPosts()
+  return paginate(allPosts, { pageSize: SITE.postsPerPage })
+}
+
+const { page } = Astro.props
+
+const postsByYear = groupPostsByYear(page.data)
+const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
+---
+
+<Layout class="max-w-4xl">
+  <PageHead slot="head" title="Investigation Dossiers" />
+  <Breadcrumbs
+    items={[
+      { label: 'Dossiers', href: '/blog', icon: 'lucide:library-big' },
+      { label: `Page ${page.currentPage}`, icon: 'lucide:book-copy' },
+    ]}
+  />
+
+  <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
+    <div class="flex flex-col gap-y-1 font-mono">
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground uppercase">
+          Articles & Write-ups
+        </h1>
+      </div>
+      <p class="text-xs text-muted-foreground">
+        All {page.total} posts, notes, and technical write-ups.
+      </p>
+    </div>
+
+    {
+      years.map((year) => (
+        <section class="flex flex-col gap-y-4">
+          <div class="flex items-center gap-3 font-mono text-xs text-muted-foreground border-b border-border/60 pb-1.5">
+            <span class="text-foreground font-semibold">{year}</span>
+            <div class="h-px flex-1 bg-border/60"></div>
+            <span>{postsByYear[year].length} posts</span>
+          </div>
+          <ul class="flex flex-col gap-3.5">
+            {postsByYear[year].map((post) => (
+              <li>
+                <BlogCard entry={post} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+
+  <PaginationComponent
+    currentPage={page.currentPage}
+    totalPages={page.lastPage}
+    baseUrl="/blog/"
+    client:load
+  />
+</Layout>

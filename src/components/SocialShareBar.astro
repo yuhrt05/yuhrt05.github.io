@@ -1,0 +1,162 @@
+---
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  url: string
+  title: string
+}
+
+const { url, title } = Astro.props
+
+// Construct share URLs
+const encodedUrl = encodeURIComponent(url)
+const encodedTitle = encodeURIComponent(title)
+
+const shareLinks = {
+  twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+  facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+  linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+  reddit: `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`,
+  email: `mailto:?subject=${encodedTitle}&body=${encodedUrl}`,
+}
+---
+
+<div class="border-border bg-muted/30 mt-8 flex flex-col gap-4 rounded-lg border p-6">
+  <div class="flex items-center gap-2">
+    <Icon name="lucide:share-2" class="text-muted-foreground size-5" />
+    <h3 class="text-foreground text-sm font-medium">Share this post</h3>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <!-- Twitter/X -->
+    <a
+      href={shareLinks.twitter}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="bg-background hover:bg-accent hover:text-accent-foreground border-border group flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors"
+      aria-label="Share on Twitter"
+    >
+      <Icon
+        name="lucide:twitter"
+        class="text-muted-foreground group-hover:text-foreground size-4 transition-colors"
+      />
+      <span class="hidden sm:inline">Twitter</span>
+    </a>
+
+    <!-- Facebook -->
+    <a
+      href={shareLinks.facebook}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="bg-background hover:bg-accent hover:text-accent-foreground border-border group flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors"
+      aria-label="Share on Facebook"
+    >
+      <Icon
+        name="lucide:facebook"
+        class="text-muted-foreground group-hover:text-foreground size-4 transition-colors"
+      />
+      <span class="hidden sm:inline">Facebook</span>
+    </a>
+
+    <!-- LinkedIn -->
+    <a
+      href={shareLinks.linkedin}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="bg-background hover:bg-accent hover:text-accent-foreground border-border group flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors"
+      aria-label="Share on LinkedIn"
+    >
+      <Icon
+        name="lucide:linkedin"
+        class="text-muted-foreground group-hover:text-foreground size-4 transition-colors"
+      />
+      <span class="hidden sm:inline">LinkedIn</span>
+    </a>
+
+    <!-- Reddit -->
+    <a
+      href={shareLinks.reddit}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="bg-background hover:bg-accent hover:text-accent-foreground border-border group flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors"
+      aria-label="Share on Reddit"
+    >
+      <Icon
+        name="lucide:message-square"
+        class="text-muted-foreground group-hover:text-foreground size-4 transition-colors"
+      />
+      <span class="hidden sm:inline">Reddit</span>
+    </a>
+
+    <!-- Email -->
+    <a
+      href={shareLinks.email}
+      class="bg-background hover:bg-accent hover:text-accent-foreground border-border group flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors"
+      aria-label="Share via Email"
+    >
+      <Icon
+        name="lucide:mail"
+        class="text-muted-foreground group-hover:text-foreground size-4 transition-colors"
+      />
+      <span class="hidden sm:inline">Email</span>
+    </a>
+
+    <!-- Copy Link -->
+    <button
+      type="button"
+      class="bg-background hover:bg-accent hover:text-accent-foreground border-border group flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors"
+      aria-label="Copy link"
+      data-copy-url={url}
+    >
+      <Icon
+        name="lucide:link"
+        class="text-muted-foreground group-hover:text-foreground size-4 transition-colors"
+      />
+      <span class="hidden sm:inline">Copy Link</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const copyButtons = document.querySelectorAll('[data-copy-url]')
+
+    copyButtons.forEach((button) => {
+      button.addEventListener('click', async () => {
+        const url = button.getAttribute('data-copy-url')
+        if (!url) return
+
+        try {
+          await navigator.clipboard.writeText(url)
+
+          // Visual feedback
+          const icon = button.querySelector('svg')
+          const span = button.querySelector('span')
+          const originalIconName = icon?.getAttribute('data-icon') || 'lucide:link'
+          const originalText = span?.textContent
+
+          if (icon) {
+            icon.setAttribute('data-icon', 'lucide:check')
+            icon.classList.add('text-green-500')
+          }
+          if (span) {
+            span.textContent = 'Copied!'
+          }
+
+          // Reset after 2 seconds
+          setTimeout(() => {
+            if (icon) {
+              icon.setAttribute('data-icon', originalIconName)
+              icon.classList.remove('text-green-500')
+            }
+            if (span && originalText) {
+              span.textContent = originalText
+            }
+          }, 2000)
+        } catch (err) {
+          console.error('Failed to copy URL:', err)
+        }
+      })
+    })
+  })
+</script>

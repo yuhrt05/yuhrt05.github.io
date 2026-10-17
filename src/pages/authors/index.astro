@@ -1,25 +1,68 @@
 ---
-import AuthorCard from "@/components/AuthorCard.astro"
-import MetaPage from "@/components/MetaPage.astro"
-import Layout from "@/layouts/Layout.astro"
-import { getCollection } from "astro:content"
+import AuthorCard from '@/components/AuthorCard.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import SocialStatus from '@/components/SocialStatus'
+import Layout from '@/layouts/Layout.astro'
+import { getAllAuthors } from '@/lib/data-utils'
 
-const authors = (await getCollection("authors")).sort((a, b) =>
-  a.data.name.localeCompare(b.data.name),
-)
+const authors = await getAllAuthors()
+const author = authors?.[0]
 ---
 
-<Layout>
-  <MetaPage slot="head" title="Authors" />
-  <ul>
-    {authors.map((author) => <AuthorCard author={author} />)}
-  </ul>
-</Layout>
+<Layout class="max-w-4xl">
+  <PageHead slot="head" title="Security Researcher Dossier" />
+  <Breadcrumbs items={[{ label: 'Authors', icon: 'lucide:users' }]} />
 
-<style>
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-m);
-  }
-</style>
+  <div class="flex flex-col gap-y-6">
+    <div class="flex flex-col gap-y-1 font-mono">
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground uppercase">
+          About the Author
+        </h1>
+      </div>
+      <p class="text-xs text-muted-foreground">
+        Identity, research focus, and security operations profile.
+      </p>
+    </div>
+
+    {
+      authors.length > 0 ? (
+        <ul class="flex flex-col gap-4">
+          {authors.map((author) => (
+            <li>
+              <AuthorCard author={author} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-muted-foreground text-center font-mono text-xs">No authors found.</p>
+      )
+    }
+
+    {
+      author && (
+        <section class="rounded-xl border border-border bg-card/40 p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-border/50 pb-3 font-mono">
+            <h2 class="text-sm font-semibold tracking-wider text-foreground uppercase">
+              About {author.data.name}
+            </h2>
+            <span class="text-xs text-muted-foreground">SOC &bull; DFIR &bull; RE</span>
+          </div>
+
+          <div class="space-y-3 text-xs leading-relaxed text-muted-foreground font-sans">
+            <p>
+              Hi, I'm <strong class="text-foreground font-mono">ANe</strong> (yuhrt05) — a security practitioner focused on Blue Team operations, Digital Forensics & Incident Response (DFIR).
+            </p>
+            <p>
+              My goal is to understand attack methodologies from an offensive perspective in order to engineer resilient detections, analyze memory artifacts, dissect malware behavior, and automate SIEM triage pipelines.
+            </p>
+            <p class="font-mono text-muted-foreground text-xs pt-1 italic">
+              &gt; "A little each day adds up to a lot."
+            </p>
+          </div>
+        </section>
+      )
+    }
+  </div>
+</Layout>

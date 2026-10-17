@@ -1,0 +1,699 @@
+---
+title: "DeadSecCTF 2025"
+description: "Technical write-up: DeadSecCTF 2025"
+date: 2025-07-28
+authors: [ane]
+tags: ["forensics", "CTF"]
+image: "./assets/banner.png"
+---
+
+## _RAMble Reconstruction_
+
+![image](/assets/image5/1.png)
+
+Theo mô tả thì đây là một bản `dump` chứa rất nhiều khung hình của 1 `webcam`, xác nhận ban đầu thì đều là ảnh `PNG`
+
+![image](/assets/image5/2.png)
+
+Tiến hành `extract` hết đống đó thu được các khung hình với toàn màu đen :<
+
+![image](/assets/image5/3.png)
+
+Mình thử một số tool liên quan đến `PNG` thì không thu được lại thông tin gì hữu ích, nên chỉ còn một thứ duy nhất là flag được ẩn giấu trong các kênh `LSB`. Và đây là script python mình dùng để tìm flag
+
+```python
+import os
+from PIL import Image
+
+def extract_lsb(img_path):
+    img = Image.open(img_path)
+    bits = ""
+    for pixel in list(img.getdata()):
+        for channel in pixel[:3]:  # RGB
+            bits += str(channel & 1)
+    chars = [chr(int(bits[i:i+8], 2)) for i in range(0, len(bits), 8)]
+    msg = ''.join(chars)
+    return msg.split('\x00')[0]
+
+folder = "png"
+for file in sorted(os.listdir(folder)):
+    if file.endswith(".png"):
+        path = os.path.join(folder, file)
+        message = extract_lsb(path)
+        if "flag" in message or message.strip():
+            print(f"{message}")
+```
+
+Đoạn mã lần lượt trích xuất các bit cuối của mỗi kênh màu (R,G,B) trong từng pixel, sau đó ghép chúng lại thành chuỗi nhị phân và chuyển sang kí tự tương ứng
+
+![image](/assets/image5/4.png)
+
+Flag: `DEAD{Reconstructed_From_Webcam_RAM_Buff3rs!}`
+
+## _TradeTrap_1_
+
+![image](/assets/image5/5.png)
+
+`nc` vào `server` và tiến hành phân tích để trả lời câu hỏi
+
+### Q1. What is the name of the messaging application used by the attacker to communicate with the victim?
+
+Mình lưới phần `download` của user thì thấy được có tải `discord` về nên mình lấy đó làm đáp án thì đúng
+
+![image](/assets/image5/6.png)
+
+### Q2. What is the Victim's and the attacker's username on the identified messaging platform? (format: victim:attacker)
+
+Để biết được `username` thì ta phải có được đoạn chat của họ. Thông tin này sẽ được lưu trữ trong `Cache` của `Discord`. Vì nó lưu trữ dưới dạng `binary blob` từ Chromium nên mình có thể dùng `ChromeCacheVie` để trích xuất data.
+
+![image](/assets/image5/7.png)
+
+Save toàn bộ folder đó về, tìm đến file json lưu trữ `message` mình có được thông tin sau
+
+```json
+[
+  {
+    "type": 0,
+    "content": "https:/drive.google.com/drive/folders/125DX3vgsbsnIuJ5KBzi5yl1upCx1guXI\nhey note that the files got password which is : \"password\"\nbecause its a VIP indicator , tell me ur opinion when u try it",
+    "mentions": [],
+    "mention_roles": [],
+    "attachments": [],
+    "embeds": [
+      {
+        "type": "link",
+        "url": "https:/drive.google.com/drive/folders/125DX3vgsbsnIuJ5KBzi5yl1upCx1guXI",
+        "provider": {
+          "name": "Google Drive"
+        },
+        "content_scan_version": 0
+      }
+    ],
+    "timestamp": "2025-07-16T22:35:44.865000+00:00",
+    "edited_timestamp": null,
+    "flags": 0,
+    "components": [],
+    "id": "1395172079787311254",
+    "channel_id": "1393930208381501633",
+    "author": {
+      "id": "1393176667836518503",
+      "username": "forexwhale_",
+      "avatar": null,
+      "discriminator": "0",
+      "public_flags": 0,
+      "flags": 0,
+      "banner": null,
+      "accent_color": null,
+      "global_name": "ForexWhale",
+      "avatar_decoration_data": null,
+      "collectibles": null,
+      "display_name_styles": null,
+      "banner_color": null,
+      "clan": null,
+      "primary_guild": null
+    },
+    "pinned": false,
+    "mention_everyone": false,
+    "tts": false
+  },
+  {
+    "type": 0,
+    "content": "yes sure bro why not , send it",
+    "mentions": [],
+    "mention_roles": [],
+    "attachments": [],
+    "embeds": [],
+    "timestamp": "2025-07-16T22:34:22.586000+00:00",
+    "edited_timestamp": null,
+    "flags": 0,
+    "components": [],
+    "id": "1395171734683910245",
+    "channel_id": "1393930208381501633",
+    "author": {
+      "id": "1393661744194392185",
+      "username": "forexian0",
+      "avatar": null,
+      "discriminator": "0",
+      "public_flags": 0,
+      "flags": 0,
+      "banner": null,
+      "accent_color": null,
+      "global_name": "forexiano",
+      "avatar_decoration_data": null,
+      "collectibles": null,
+      "display_name_styles": null,
+      "banner_color": null,
+      "clan": null,
+      "primary_guild": null
+    },
+    "pinned": false,
+    "mention_everyone": false,
+    "tts": false
+  },
+  {
+    "type": 0,
+    "content": "hey man i've just received the newest forensics indicator it also has this discord plugin that opens the chart website as soon as u open discord wanna check it out ?",
+    "mentions": [],
+    "mention_roles": [],
+    "attachments": [],
+    "embeds": [],
+    "timestamp": "2025-07-16T22:33:02.380000+00:00",
+    "edited_timestamp": null,
+    "flags": 0,
+    "components": [],
+    "id": "1395171398275567626",
+    "channel_id": "1393930208381501633",
+    "author": {
+      "id": "1393176667836518503",
+      "username": "forexwhale_",
+      "avatar": null,
+      "discriminator": "0",
+      "public_flags": 0,
+      "flags": 0,
+      "banner": null,
+      "accent_color": null,
+      "global_name": "ForexWhale",
+      "avatar_decoration_data": null,
+      "collectibles": null,
+      "display_name_styles": null,
+      "banner_color": null,
+      "clan": null,
+      "primary_guild": null
+    },
+    "pinned": false,
+    "mention_everyone": false,
+    "tts": false
+  }
+]
+
+```
+
+Từ đoạn `json` trên thấy được user `forexwhale_` gửi một đường link drive lạ cho user `forexiano` có kèm theo lời nhắn gợi ý về một `Plugin Discord` =###  attacker `forexwhale_` và victim `forexiano`
+
+`Answer: forexwhale_:forexian0`
+
+### Q3. When was the url that inlcuded the malicious files sent? (format: yyyy-mm-dd hh:mm:ss)
+
+Vẫn trong đoạn json trên
+
+`Answer: 2025-07-16 22:35:44`
+
+### Q4. What is the name of the file sent by the attacker that redirected the victim to a phishing website?
+
+Truy cập link drive trên, pass là `password` (được đề cập trong đoạn `json`)
+
+![image](/assets/image5/9.png)
+
+Mở file `js` ra xem thử
+
+![image](/assets/image5/10.png)
+
+Đoạn mã trên thực hiện hiển thị một dòng fake thông báo update tỉ giá, sau đó nó tự mở một `URL` đã bị `b64 encode` 
+
+`Answer: ForexSignalTracker.plugin.js`
+
+### Q5. What is the full URL or domain name of the phishing website used in the attack?
+
+Decode b64 trên là lấy được `URL` 
+
+`Answer: https:/secure.fxpro-login.support-check.net`
+
+### Q6. What is the SHA-256 hash of the second malicious file that granted the attacker access to the victim's machine?
+
+Ngoài file `js` còn 1 file `exe` khác nữa
+
+![image](/assets/image5/11.png)
+
+`Answer: 90147f8776ac9af5ed70fd67c8419508c09437c5c07fd74c221da613efe653de`
+
+Tổng hợp đáp án:
+
+```                                                                        
+┌──(kali㉿kali)-[~]
+└─$ nc nc.deadsec.quest 31842
+What is the name of the messaging application used by the attacker to communicate with the victim?
+Your answer: discord
+Correct! ✅ Moving to the next question.
+What is the Victim's and the attacker's username on the identified messaging platform? (format: victim:attacker)
+Your answer: forexian0:forexwhale_
+Correct! ✅ Moving to the next question.
+When was the url that inlcuded the malicious files sent? (format: yyyy-mm-dd hh:mm:ss)
+Your answer: 2025-07-16 22:35:44
+Correct! ✅ Moving to the next question.
+What is the name of the file sent by the attacker that redirected the victim to a phishing website?
+Your answer: ForexSignalTracker.plugin.js
+Correct! ✅ Moving to the next question.
+What is the full URL or domain name of the phishing website used in the attack?
+Your answer: https:/secure.fxpro-login.support-check.net
+Correct! ✅ Moving to the next question.
+What is the SHA-256 hash of the second malicious file that granted the attacker access to the victim's machine?
+Your answer: 1990ea4aa21fe3ba67b5a9feb3ec2e8477704908caf3703687c5b63d96c668a8
+Incorrect! ❌ Try harder.
+Your answer: 90147f8776ac9af5ed70fd67c8419508c09437c5c07fd74c221da613efe653de
+Correct! ✅
+Good Job! You answered all questions correctly! 🔥 Here is your flag:
+DEAD{cfbc0f40f40aeacb_5c5980de124f3d65}
+```
+
+## _TradeTrap_2_
+
+![image](/assets/image5/12.png)
+
+### Q1. When was the malicious executable  executed on the victim's system? (format: yyyy-mm-dd hh:mm:ss)
+
+Hỏi về thời gian thực thi thì mình sẽ check trong `prefetch`, malicious file sẽ là file `exe` ở `TradeTrap1`
+
+![image](/assets/image5/13.png)
+
+`Answer: 2025-07-16 22:40:26`
+
+### Q2. How many times did this executable run in total?
+
+Vẫn trong câu trên
+
+`Answer: 1`
+
+### Q3. To Maintain persistence the attacker created a new user , what is the name of that user?
+
+Mình sẽ check trong log `Security` với event ID `4720`
+
+![image](/assets/image5/14.png)
+
+`Answer: obeidat`
+
+### Q4. What is the name of the user that the attacker used to performed the action of creating a new user?
+
+Vẫn trong log đó
+
+`Answer: Trader`
+
+### Q5. The attacker added the new user (obeidat) to a group , name it ?
+
+Vẫn trong log `security` với ID là `4732`
+
+![image](/assets/image5/15.png)
+
+
+`Answer: Administrators`
+
+### Q6. The Attacker created a copy of the malicious executable that granted him access to the machine , what is the name of the new copy?
+
+Duy trì quyền truy cập chính là cơ chế `persistance`  nên mình sẽ kiểm tra những chỗ quen thuộc. Ở trong `System32/Tasks` mình thấy 1 tác vụ được lập lịch trông khá lạ tên là `SyncService`
+
+![image](/assets/image5/16.png)
+
+Thấy được file được chạy là `winhelp32.exe`
+
+`Answer: winhelp32.exe`
+
+### Q7. When was that copy created? (format: yyyy-mm-dd hh:mm:ss)
+
+![image](/assets/image5/17.png)
+
+Vì thời gian tạo ra task này là `2025-07-16 22:44:36` nên file `winhelp32.exe` phải được drop vào hệ thống trước đó, mình thử spam một số thời điểm gần đó nhưng sai. Nên giờ sẽ đi tìm thời điểm chính xác. Thử check trong `prefetch` nhưng không thấy sự xuất hiện của file đó, hỏi AI thì có được một tệp lưu trữ lớn hơn là `$MFT`
+
+`File đặc biệt $MFT (Master File Table) trong hệ thống tập tin NTFS lưu trữ toàn bộ thông tin siêu dữ liệu (metadata) của tất cả các file và thư mục trên ổ đĩa`
+
+Mình dùng tool `MFTEcmd` để trích xuất thông tin
+
+![image](/assets/image5/18.png)
+
+Có được thời gian là `7/16/2025  10:44:19` nhưng mình cũng méo hiểu đáp án đúng lại là -1 giây hmm
+
+`Answer: 2025-07-16 22:44:18`
+
+
+### Q8. The attacker created a  Scheduled Task using the copy file to maintain persistance , what is the name of the Scheduled Task?
+
+`Scheduled Task` đã xác được xác định từ Q6
+
+`Answer: SyncService`
+
+### Q9. What event or condition triggers the execution of the scheduled task from the previous question?
+
+![image](/assets/image5/19.png)
+
+Task được thiết lập sao cho bất cứ khi nào `user` đăng nhập vào máy thì sẽ được kích hoạt chạy
+
+`Answer: Logon`
+
+### Q10. What is the full path of the command or executable configured to run through this Scheduled Task?
+
+Vẫn ở trên `Q6` 
+
+`Answer: C:\windows\winhelp32.exe`
+
+Tổng hợp đáp án:
+
+```
+┌──(kali㉿kali)-[~]
+└─$ nc nc.deadsec.quest 30413
+When was the malicious executable  executed on the victim's system? (format: yyyy-mm-dd hh:mm:ss)
+Your answer: 2025-07-16 22:40:26
+Correct! ✅ Moving to the next question.
+How many times did this executable run in total?
+Your answer: 1
+Correct! ✅ Moving to the next question.
+Your answer: obeidat
+Correct! ✅ Moving to the next question.
+What is the name of the user that the attacker used to performed the action of creating a new user?
+Your answer: Trader
+Correct! ✅ Moving to the next question.
+The attacker added the new user (obeidat) to a group , name it ?
+Your answer: Administrators
+Correct! ✅ Moving to the next question.
+The Attacker created a copy of the malicious executable that granted him access to the machine , what is the name of the new copy?
+Your answer: winhelp32.exe
+Correct! ✅ Moving to the next question.
+When was that copy created? (format: yyyy-mm-dd hh:mm:ss)
+Your answer: 2025-07-16 22:44:18
+Correct! ✅ Moving to the next question.
+The attacker created a  Scheduled Task using the copy file to maintain persistance , what is the name of the Scheduled Task?
+Your answer: SyncService
+Correct! ✅ Moving to the next question.
+What event or condition triggers the execution of the scheduled task from the previous question?
+Your answer: Logon
+Correct! ✅ Moving to the next question.
+What is the full path of the command or executable configured to run through this Scheduled Task?
+Your answer: C:\windows\winhelp32.exe
+Correct! ✅
+Good Job! You answered all questions correctly! 🔥 Here is your flag:
+DEAD{94d4d4b54ededf44_64ee73d8f13a5b45}
+```
+
+## _TradeTrap_3_
+
+![image](/assets/image5/20.png)
+
+Vẫn theo series đó và giờ là phần cuối
+
+### Q1. What is the name of the password manager or vault application used by the victim?
+
+Trong thư mục `Downloads` mình xem ở phần 1 thì cũng có 1 tệp `exe` liên quan đến ứng dụng `password manager` là `Enpass` và nó cũng chính là đáp án
+
+`Answer: Enpass`
+
+### Q2. What is the number of iterations used in the key derivation function (KDF) of the Enpass vault?
+
+Mình kh rõ hướng đi nên tìm kiếm hết 1 lượt thì lấy được 1 file có tên là `vault.json`  được lưu tại `Appdata/Roaming/Sinew.../Enpass/Enpass/Vault/primary`
+
+![image](/assets/image5/21.png)
+
+`File này mô tả thông tin meta (metadata) về một "vault" (kho chứa mật khẩu), không chứa trực tiếp dữ liệu nhạy cảm như username/password, mà chỉ mô tả cấu hình.`
+
+Và ta có thể thấy được số lần lặp để sinh khóa là `"kdf_iter": 320000`
+
+`Answer: 320000`
+
+### Q3. What is the decrypted master password used to access the vault?
+
+Vẫn trong path đó ta có được 1 file `vault.enpassdb` đây là một db quan trọng của `enpass` nơi lưu trữ dữ liệu nhạy cảm bao gồm mật khẩu,... của người dùng, ở dạng đã bị mã hóa.
+
+- Đầu tiên ta sinh hash bằng `enpass2join` 
+
+![image](/assets/image5/22.png)
+
+- Lưu ý rằng mới đầu `iterations` sẽ là `100000` nên ta cần thay lại bằng số lần lặp đúng là `320000`
+
+Tiến hành crack
+
+![image](/assets/image5/23.png)
+
+`Answer: blink182`
+
+### Q4. What is the number of the credit card stored within the victim's password vault? (no spaces)
+
+Lấy mật khẩu vừa crack được, kết hợp tải `Enpass` về và add folder `Backups` vào `Enpass` mình lấy được thông tin `credit card` của nạn nhân
+
+![image](/assets/image5/24.png)
+
+`Answer: 1104884175560013`
+
+### Q5. The attacker started spending the money of the credit card, and the victim just realized the attack he contacted his bank to stop the card but the bank required the account number for validation , the victim forgot to store it in the vault but he NOTED it somewhere else before , what is the bank accout number?
+
+Thấy chữ `noted` được viết hoa nên mình sẽ chú ý đến lưu trữ trong `Notepad`. Mình kiểm tra theo path quen thuộc là `C:\Users\\AppData\Local\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState`, nhưng kh thấy sự xuất hiện thì mình đoán đây kh phải là `win11` (vì notepad trên win11 có tính năng `autosave`, dữ liệu sẽ được lưu tại đây!)
+
+Mình lại ngồi mò chay hết một đống thư mục thì có được `victim` lưu trữ trong `Notepad++` 
+
+![image](/assets/image5/25.png)
+
+`Answer: 1911008734`
+
+Tổng hợp đáp án
+```
+┌──(kali㉿kali)-[~]
+└─$ nc nc.deadsec.quest 32570
+What is the name of the password manager or vault application used by the victim?
+Your answer: Enpass
+Correct! ✅ Moving to the next question.
+What is the number of iterations used in the key derivation function (KDF) of the Enpass vault?
+Your answer: 320000
+Correct! ✅ Moving to the next question.
+What is the decrypted master password used to access the vault?
+Your answer: blink182
+Correct! ✅ Moving to the next question.
+What is the number of the credit card stored within the victim's password vault? (no spaces)
+Your answer: 1104884175560013
+Correct! ✅ Moving to the next question.
+The attacker started spending the money of the credit card, and the victim just realized the attack he contacted his bank to stop the card but the bank required the account number for validation , the victim forgot to store it in the vault but he NOTED it somewhere else before , what is the bank accout number?
+Your answer: 1911008734
+Correct! ✅
+Good Job! You answered all questions correctly! 🔥 Here is your flag:
+DEAD{337954be2dfa9e2d_ef02dc3a63383f61}
+
+```
+## _F - Forensics_
+
+![image](/assets/image5/26.png)
+
+Bài cung cấp cho mình 1 file `dump.mem`. Let's go!
+
+### Q1. We'll start with a little sanity check, what's the sha256 hash of the file ?
+
+Đơn giản là check hash thôi
+
+![image](/assets/image5/27.png)
+
+`Answer: 9f9d089ad84173dc40e910ad1ba1d584bb5c9b2e82ae2164d6bd22d3b37a7588`
+
+### Q2. What is the full path to the malicious elf file ?
+
+Trước hết mình dùng `pslist` để liệt kê tiến trình, thấy được các `process` như `bash, su, sudo` đã hoạt động kèm theo đó là một tiến trình khá sus là `malware-f`
+
+![image](/assets/image5/28.png)
+
+Nên mình tiến hành kiểm tra lịch sử `bash`
+
+![image](/assets/image5/29.png)
+
+Có thể thấy `bash history` dài như 1 cuốn sớ, với những hành động lặp đi lặp lại như `wget, chmod, sudo su, clear, exit,...` chủ yếu là để làm rối người chơi nên mình chọn cách đơn giản hơn là check file trong `Ram` với `malicious file` là `malware-f`
+
+![image](/assets/image5/30.png)
+
+`Answer: /root/malware-f`
+
+### Q3. The malware checks for virtual environments through a system file, what is it ? (full path)
+
+Tiến hành dump `malicious file` về máy, với `Inode addr` là `0x8a888c032f08`
+
+![image](/assets/image5/31.png)
+
+Mình dùng `ida` để `reverse` và đây là hàm main
+
+```c
+__int64 __fastcall main(__int64 a1, char **a2, char **a3)
+{
+  __int64 v3; / rax
+
+  if ( (unsigned int)sub_10C0(a1, a2, a3) || !sub_1290(*a2, "systemd") )
+  {
+    if ( !(unsigned int)sub_1280() )
+      sub_1FD4();
+    return 0;
+  }
+  else
+  {
+    v3 = sub_1090(*a2);
+    sub_1050(*a2, "[kworker/0:0]", v3);
+    if ( (int)sub_1280() <= 0 )
+    {
+      sub_1140();
+      sub_11B0(0);
+      sub_10A0("/");
+      sub_1130(0);
+      sub_1130(1);
+      sub_1130(2);
+      if ( !(unsigned int)sub_1661() )
+      {
+        sub_1E9E();
+        sub_1BBC();
+        sub_1919();
+        sub_176D();
+        sub_1F48();
+        if ( !(unsigned int)sub_1280() )
+          sub_1FD4();
+        if ( !(unsigned int)sub_1280() )
+          sub_1AC4();
+        if ( !(unsigned int)sub_1280() )
+          sub_1CCA();
+        while ( 1 )
+        {
+          sub_1270(3600);
+          sub_1E27();
+        }
+      }
+      return 0;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+}
+```
+
+Có thể thấy được hàm `main` chủ yếu gọi các hàm con ra để test điều kiện và thực thi nếu thỏa mãn. Ta có hàm `sub_1661()` như sau:
+
+![image](/assets/image5/32.png)
+
+- Đây là một hàm phát hiện `VM/Sanbox`, cụ thể nó thực hiện kiểm tra thông tin từ `/proc/cpuinfo` trên hệ thống `linux`
+- Nếu có sự xuất hiện của `hypervisor`, `QEMU` hay `VMWare` thì `return 1` có nghĩa phát hiện `VM/Sanbox`, ngừng thực thi chương trình
+
+=###  Tệp hệ thống mà `malware` sử dụng để phát hiện `VM/Sanbox` là `/proc/cpuinfo`
+
+### Q4. The malware installed a fake service as a persistence mechanism, what was the service name ?
+
+Sau khi check xong máy ảo, thì thực thi tiếp chương trình, và đây là hàm `sub_176D()`:
+
+![image](/assets/image5/33.png)
+
+Hàm này có chức năng thiết lập cơ chế `persistance` bằng cách:
+- Tạo file `.dbus.service`trong thư mục `~/.config/systemd/user/default.target.wants/` với `fake new` là `System Bus`
+- Dịch vụ này thực thi `/lib/.X11-unix/.X1` sau khi sleep 300 giây
+- Chạy `systemctl enable --now .dbus.service` để kích hoạt ngay lập tức dịch vụ và cấu hình tự động chạy lại sau `reboot`
+
+Từ đó ta thấy được `fake service` được thêm vào là `.dbus.service`.
+
+### Q5. The malware connects to two C2 IPs, what are they ? (ip1 - ip2)
+
+Tìm đến 1 hàm khác là `sub_1CCA()`:
+
+![image](/assets/image5/34.png)
+
+- Malware cố gắng kết nối đến hai `C2 IP` trên port `443`. Nếu một trong hai thất bại, thực hiện mở `/bin/sh` để attacker có thể tương tác.
+
+Dễ dàng thấy được 2 `C2 IP` là `185.143.223.107 - 45.133.216.219`
+
+### Q6. The malware copies itself and imitates a library, where is it stored ?
+
+Ngay trước hàm `sub_176D()` ở câu 4 là hàm `sub_1919()`:
+
+![image](/assets/image5/35.png)
+
+- Nó đọc nội dung bản thân từ `/proc/self/exe` và ghi ra file `/lib/.X11-unix/.X1`
+- Đặt quyền thực thi cho file mới
+- Đặt thuộc tính không thể sửa `(immutable)` để chống bị xóa/gỡ.
+
+Như vậy, thư viện được được dùng ở đây là `/lib/.X11-unix/.X1`
+
+### Q7. What command does the malware use to make the new copied file immutable ?
+
+Tại hàm `sub_1919()` có gọi thêm hàm `sub_1886()` như sau:
+
+![image](/assets/image5/36.png)
+
+Hàm này thực hiện lệnh `chattr +i /lib/.X11-unix/.X1` để ngăn không cho người dùng `sửa/xóa` file `malware` đã sao chép trước đó
+
+`Answer: chattr +i`
+
+### Q8. What three debugging techniques does the malware specifically check for in its anti-debug routine ? (1-2-3)
+
+![image](/assets/image5/37.png)
+
+`Answer: LD_PRELOAD-strace-ltrace`
+
+### Q9. Looks like the malware is injecting an ssh key, what type is this key ?
+
+![image](/assets/image5/38.png)
+
+Nhảy vào hàm `sub_1A5E()`
+
+![image](/assets/image5/39.png)
+
+`Answer: ssh-ed25519`
+
+### Q10. Where is that key being injected ? (full path)
+
+![image](/assets/image5/40.png)
+
+`Answer: /root/.ssh/authorized_keys`
+
+### Q11. What command is the malware using to clear all traces of executed commands ?
+
+![image](/assets/image5/41.png)
+
+`Answer: history -c`
+
+### Q12. How often is the log cleaning function being executed ? (in seconds)
+
+![image](/assets/image5/42.png)
+
+`Answer: 3600`
+
+Tổng hợp đáp án:
+```
+┌──(kali㉿kali)-[~]
+└─$ nc nc.deadsec.quest 31166
+
+Answer all the questions and you'll get the flag. Good Luck !! :3
+
+We'll start with a little sanity check, what's the sha256 hash of the file ?
+>  9f9d089ad84173dc40e910ad1ba1d584bb5c9b2e82ae2164d6bd22d3b37a7588
+[+] Correct!
+
+What is the full path to the malicious elf file ?
+>  /root/malware-f
+[+] Correct!
+
+The malware checks for virtual environments through a system file, what is it ? (full path)
+>  /proc/cpuinfo                       
+[+] Correct!
+
+The malware installed a fake service as a persistence mechanism, what was the service name ?
+>  .dbus.service
+[+] Correct!
+
+The malware connects to two C2 IPs, what are they ? (ip1 - ip2)
+>  185.143.223.107 - 45.133.216.219
+[+] Correct!                                                                                             
+
+The malware copies itself and imitates a library, where is it stored ?
+>  /lib/.X11-unix/.X1
+[+] Correct!                                                                                             
+
+What command does the malware use to make the new copied file immutable ?
+>  chattr +i
+[+] Correct!                                                                                             
+
+What three debugging techniques does the malware specifically check for in its anti-debug routine ? (1-2-3)                                                                                                       
+>  LD_PRELOAD-strace-ltrace
+[+] Correct!                                                                                             
+
+Looks like the malware is injecting an ssh key, what type is this key ?
+>  ssh-ed25519
+[+] Correct!                                                                                             
+
+Where is that key being injected ? (full path)
+>  /root/.ssh/authorized_keys
+[+] Correct!                                                                                             
+
+What command is the malware using to clear all traces of executed commands ?
+>  history -c
+[+] Correct!                                                                                             
+
+How often is the log cleaning function being executed ? (in seconds)
+>  3600
+[+] Correct!                                                                                             
+
+[+] Here is the flag:
+DEAD{You_still_like_memory_dumps_280be1cf55548812}
+```

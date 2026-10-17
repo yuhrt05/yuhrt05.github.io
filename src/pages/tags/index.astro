@@ -1,45 +1,45 @@
 ---
-import MetaPage from "@/components/MetaPage.astro"
-import Layout from "@/layouts/Layout.astro"
-import { getTags } from "@/lib/content"
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import { getSortedTags } from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
 
-const tags = await getTags()
+const sortedTags = await getSortedTags()
 ---
 
-<Layout crumbs={[{ label: "Tags", href: "/tags" }]}>
-  <MetaPage slot="head" title="Tags" noindex />
-  <ul>
-    {[...tags].map(([tag, posts]) => (
-        <li>
-          <a href={`/tags/${tag}`}>#{tag}<tag-count>{posts.length}</tag-count></a>
-        </li>
-      ))}
-  </ul>
+<Layout class="max-w-4xl">
+  <PageHead slot="head" title="MITRE & Classification Tags" />
+  <Breadcrumbs items={[{ label: 'Tags', icon: 'lucide:tags' }]} />
+
+  <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-y-1 font-mono">
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground uppercase">
+          Tags
+        </h1>
+      </div>
+      <p class="text-xs text-muted-foreground">
+        Explore write-ups by topic, methodology, and technique ({sortedTags.length} tags).
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-2.5">
+      {
+        sortedTags.map(({ tag, count }) => (
+          <Link
+            href={`/tags/${tag}`}
+            class="group inline-flex items-center gap-1.5 rounded-md border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-foreground transition-colors hover:border-foreground/40 hover:bg-muted"
+          >
+            <Icon name="lucide:hash" class="size-3 text-muted-foreground group-hover:text-foreground" />
+            <span>{tag}</span>
+            <span class="rounded bg-muted px-1.5 py-0.2 text-[10px] text-muted-foreground font-semibold border border-border">
+              {count}
+            </span>
+          </Link>
+        ))
+      }
+    </div>
+  </div>
 </Layout>
-
-<style>
-  ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs);
-
-    a {
-      display: inline-block;
-      padding-inline: var(--space-2xs);
-      font-size: var(--step--1);
-      color: var(--muted-foreground);
-      background-color: color-mix(in oklab, var(--muted) 50%, transparent);
-      border-radius: var(--radius-full);
-      text-decoration-line: none;
-
-      &:hover {
-        color: var(--foreground);
-      }
-
-      tag-count {
-        margin-inline-start: var(--space-3xs);
-        opacity: 0.6;
-      }
-    }
-  }
-</style>

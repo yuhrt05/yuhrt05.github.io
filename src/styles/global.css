@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme inline {
+  --font-sans:
+    Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono:
+    Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+}
+
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/GeistVF.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/GeistMonoVF.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Warm paper background for light mode (subtle warm ivory/yellowish) */
+  --background: #fbf8f1;
+  --foreground: #09090b;
+  --primary: #09090b;
+  --primary-foreground: #fbf8f1;
+  --muted: #eee7db;
+  --muted-foreground: #2d2a28;
+  --destructive: #b91c1c;
+  --border: #dcd4c5;
+  --ring: #78716c;
+}
+
+[data-theme='dark'] {
+  /* Pure modern monochrome for dark mode */
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --primary: #fafafa;
+  --primary-foreground: #09090b;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --destructive: #ef4444;
+  --border: #27272a;
+  --ring: #52525b;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    @apply border-border outline-ring/50 tracking-tight;
+  }
+
+  h3 {
+    text-wrap: auto !important;
+  }
+}

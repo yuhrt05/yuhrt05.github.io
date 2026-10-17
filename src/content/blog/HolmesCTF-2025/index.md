@@ -1,0 +1,432 @@
+---
+title: "Holmes CTF 2025"
+description: "Technical write-up: Holmes CTF 2025"
+date: 2025-09-26
+authors: [ane]
+tags: ["Hackthebox", "forensics", "CTF"]
+image: "./assets/banner.jpg"
+---
+
+## Solution
+
+## The Card [Easy]
+
+Bài ez nên chỉ release đáp án thôi
+
+![image](/assets/images6/1.png)
+
+#### Q1. Analyze the provided logs and identify what is the first User-Agent used by the attacker against Nicole Vale's honeypot. (string)
+
+![image](/assets/images6/2.png)
+
+`Answer: Lilnunc/4A4D - SpecterEye`
+
+#### Q2. It appears the threat actor deployed a web shell after bypassing the WAF. What is the file name? (filename.ext)
+
+![image](/assets/images6/3.png)
+
+`Answer: temp_4A4D.php`
+
+#### Q3. The threat actor also managed to exfiltrate some data. What is the name of the database that was exfiltrated? (filename.ext)
+
+![image](/assets/images6/4.png)
+
+`Answer: database_dump_4A4D.sql`
+
+#### Q4. During the attack, a seemingly meaningless string seems to be recurring. Which one is it? (string)
+
+`Answer: 4A4D`
+
+#### Q5. OmniYard-3 (formerly Scotland Yard) has granted you access to its CTI platform. Browse to the first IP:port address and count how many campaigns appear to be linked to the honeypot attack.
+
+![image](/assets/images6/5.png)
+
+`Answer: 5`
+
+#### Q6. How many tools and malware in total are linked to the previously identified campaigns? (number)
+
+Màu vàng là `tool` còn đỏ đậm là `malware`
+
+![image](/assets/images6/6.png)
+
+`Answer: 9`
+
+#### Q7. It appears that the threat actor has always used the same malware in their campaigns. What is its SHA-256 hash? (sha-256 hash)
+
+![image](/assets/images6/7.png)
+
+`Answer: 7477c4f5e6d7c8b9a0f1e2d3c4b5a6f7e8d9c0b1a2f3e4d5c6b7a8f9e0d17477`
+
+#### Q8. Browse to the second IP:port address and use the CogWork Security Platform to look for the hash and locate the IP address to which the malware connects. (Credentials: nvale/CogworkBurning!)
+
+![image](/assets/images6/8.png)
+
+`Answer: 74.77.74.77`
+
+#### Q9. What is the full path of the file that the malware created to ensure its persistence on systems? (/path/filename.ext)
+
+![image](/assets/images6/9.png)
+
+`Answer: 4a4d_persistence.sh`
+
+#### Q10. Finally, browse to the third IP:port address and use the CogNet Scanner Platform to discover additional details about the TA's infrastructure. How many open ports does the server have?
+
+![image](/assets/images6/10.png)
+
+
+`Answer: 11`
+
+#### Q11. Which organization does the previously identified IP belong to? (string)
+
+![image](/assets/images6/11.png)
+
+`Answer: SenseShield MSP`
+
+#### Q12. One of the exposed services displays a banner containing a cryptic message. What is it? (string)
+
+![image](/assets/images6/12.png)
+
+`Answer: He's a ghost I carry, not to haunt me, but to hold me together - NULLINC REVENGE`
+
+## The Enduring Echo [Easy]
+
+![image](/assets/images6/13.png)
+
+#### 1. What was the first (non cd) command executed by the attacker on the host? (string)
+
+Check log bằng `EvtxCmd` và `TimelineExplorer`, dùng filter lọc riêng ID `4688` và `Execute Info` chứa `cmd`
+
+![image](/assets/images6/14.png)
+
+`Answer: systeminfo`
+
+#### 2. Which parent process (full path) spawned the attacker’s commands? (C:\FOLDER\PATH\FILE.ext)
+
+![image](/assets/images6/15.png)
+
+`Answer: C:\Windows\System32\wbem\WmiPrvSE.exe`
+
+#### 3. Which remote-execution tool was most likely used for the attack? (filename.ext)
+
+![image](/assets/images6/16.png)
+
+- Thông thường `WmiPrvSE` chỉ chạy để cung cấp dữ liệu hệ thống, nhưng ở đây nó lại `spawn` `cmd.exe` với các lệnh hệ thống
+
+- Mục đích: thu thập thông tin và lấy output ra ngoài  bằng cách ghi vào một share `SMB` mà `attacker` có thể truy cập. Đây là `pattern` thường thấy với các công cụ `remote-exec`: thay vì trả output trực tiếp, họ viết file lên một share để dễ thu thập
+
+- Việc dùng `ADMIN$` cho thấy `attacker` lợi dụng quyền `admin/SMB` để ghi vào `administrative share`.
+
+- Dấu hiệu này rất phù hợp với công cụ kiểu `wmiexec.py` trong bộ `Impacket` hoặc các tool tương tự: chúng `spawn` một `process` trên `target` để chạy lệnh và chuyển `output` qua `SMB`.
+
+![image](/assets/images6/17.png)
+
+`Answer: wmiexec.py`
+
+#### 4. What was the attacker’s IP address? (IPv4 address)
+
+![image](/assets/images6/18.png)
+
+Dòng lệnh này thêm một ánh xạ tên miền `NapoleonsBlackPearl.htb` sang `IP: 10.129.242.110`, đây là một hành động cho thấy rõ ý đồ của attacker muốn tạo điều kiện cho việc `liên lạc C2` và `đánh cắp dữ liệu` sau này
+
+`Answer: 10.129.242.110`
+
+#### 5. What is the first element in the attacker's sequence of persistence mechanisms? (string)
+
+![image](/assets/images6/19.png)
+
+`Answer: SysHelper Update`
+
+#### 6. Identify the script executed by the persistence mechanism. (C:\FOLDER\PATH\FILE.ext)
+
+Vẫn câu hỏi trên là ta xác định được file sẽ được thực thi
+
+`Answer: C:\Users\Werni\Appdata\Local\JM.ps1`
+
+#### 7. What local account did the attacker create? (string)
+
+Điều hướng đến `JM.ps1` và đây là nội dung
+
+![image](/assets/images6/20.png)
+
+- Đoạn mã trên thực hiện tạo ra một danh sách `user`: `"svc_netupd", "svc_dns", "sys_helper", "WinTelemetry", "UpdaterSvc"`
+- Kiểm tra xem tên của `user` trên `local` có trùng với tên trong danh sách không, nếu không thì thực hiện tạo một `user` ngẫu nhiên từ danh sách trên
+- Thêm user vào nhóm `Administrators và Remote Desktop Users`
+- Gửi (exfiltrate) tên user và password tới `http://NapoleonsBlackPearl.htb/Exchange` bằng GET, payload được mã hóa `Base64`.
+
+Tiến hành check log với ID `4720`
+
+![image](/assets/images6/21.png)
+
+`Answer: svc_netupd`
+
+#### 8. What domain name did the attacker use for credential exfiltration? (domain)
+
+`Answer: NapoleonsBlackPearl.htb`
+#### 9. What password did the attacker's script generate for the newly created user? (string)
+
+Có 2 cách để trả lời câu này:
+
+- Cách 1: 
+
+Ta có thể thấy `password` tại trên đoạn mã trên là ghép 2 chuỗi `Watson_` + `$timestamp`. Với `timestamp` được lấy tại thời điểm đoạn mã được thực thi `$timestamp = (Get-Date).ToString("yyyyMMddHHmmss")`. Như vậy khi thực thi, sẽ tạo ra `user` mới. Vậy ta có thể lấy dấu thời gian tại thời điểm `user` `svc_netupd` xuất hiện. Trên câu 7, đã có được `Time created` là:    `2025-08-24 23:05:09`, vì đây là `UTC+7` nên ta sẽ trừ `7` 
+
+=> `timestamps`: `20250824160509`
+
+=> `password`: `Watson_20250824160509`
+
+- Cách 2:
+
+Dump `NThash` của user đấy về và crack bằng `hashcat`
+
+![image](/assets/images6/22.png)
+
+`hashcat -m 1000 -a 3 532303a6fa70b02c905f950b60d7da51 'Watson_202508241605?d?d'`
+
+![image](/assets/images6/23.png)
+
+`Answer: Watson_20250824160509`
+
+#### 10. What was the IP address of the internal system the attacker pivoted to? (IPv4 address)
+
+![image](/assets/images6/24.png)
+
+Khi điều tra, ta thấy có dấu hiệu của `netsh` tại đây, hành vi là tắt `Windows Firewall cho tất cả profile (Domain/Private/Public)`. Đây là hành vi thường thấy khi `attacker` muốn `mở thêm cổng`, `di chuyển ngang`,...
+
+Ta tiến hành `filter` riêng `netsh` (Vẫn dùng `log` từ câu hỏi đầu tiên nha)
+
+![image](/assets/images6/25.png)
+
+Đoạn mã trên tạo một `port proxy`, mọi kết nối `TCP` tới `port` `9999` đều sẽ được chuyển tiếp tới `192.168.1.101:22`. Đây là kĩ thuật pivoting — attacker có thể kết nối vào port 9999 trên máy này và được chuyển tiếp sang máy nội bộ `192.168.1.101` (bỏ qua `firewall` / `segmentation`).
+
+> Tại sao nguy hiểm:  Cho phép kẻ `tấn công/actor` từ bên ngoài truy cập dịch vụ nội bộ (SSH) thông qua máy này. Thường đươc thiết lập bởi attacker có quyền `admin` hoặc `backdoor`. Có thể là bước để pivot `lateral movement` hoặc `exfil`.
+
+`Answer: 192.168.1.101`
+
+#### 11. Which TCP port on the victim was forwarded to enable the pivot? (port 0-65565)
+
+`Answer: 9999`
+
+#### 12. What is the full registry path that stores persistent IPv4→IPv4 TCP listener-to-target mappings? (HKLM\...\...)
+
+`HKLM\SYSTEM\CurrentControlSet\Services\PortProxy\v4tov4\tcp`
+
+#### 13. What is the MITRE ATT&CK ID associated with the previous technique used by the attacker to pivot to the internal system? (Txxxx.xxx)
+
+![image](/assets/images6/26.png)
+
+`Answer: T1090.001`
+
+#### 14. Before the attack, the administrator configured Windows to capture command line details in the event logs. What command did they run to achieve this? (command)
+
+Ta sẽ check trong `ConsolesHistory` của `admin`
+
+![image](/assets/images6/27.png)
+
+`Answer: reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit" /v ProcessCreationIncludeCmdLine_Enabled /t REG_DWORD /d 1 /f`
+
+## The Watchman's Residue [Medium]
+
+![image](/assets/images6/28.png)
+
+
+
+#### 1. What was the IP address of the decommissioned machine used by the attacker to start a chat session with MSP-HELPDESK-AI? (IPv4 address)
+
+![image](/assets/images6/29.png)
+
+Bắt đầu với file `pcap`, cùng kiểm tra qua lưu lượng giữa các địa chỉ `IP` và xem một số cuộc hội thoại ta ban đầu xác định được rằng 
+
+- Dịch vụ chatbot được truy cập thông qua host `10.128.0.3` (port 1337) và container nội bộ `172.18.0.2`. 
+- Có hai client kết nối tới chatbot: `10.32.43.31` (được xác định là `IT Admin`, hoạt động bình thường) và `10.0.69.45` (một client khả nghi). 
+- `10.0.69.45` thực hiện nhiều `request/response` hơn, trao đổi `~698 packets (~2 MB)` trực tiếp với container `172.18.0.2`, và thêm các kết nối tới host `10.128.0.3`. 
+- Hành vi này phù hợp với hoạt động tìm kiếm lỗ hổng hoặc tương tác bất thường với chatbot
+
+`Answer: 10.0.69.45`
+
+#### 2. What was the hostname of the decommissioned machine? (string)
+
+Check thông qua giao thức `nbns`
+
+![image](/assets/images6/30.png)
+
+`Answer: WATSON-ALPHA-2`
+
+#### 3. What was the first message the attacker sent to the AI chatbot? (string)
+
+Filter riêng 2 ip của `attacker` và `chatbot`
+
+![image](/assets/images6/31.png)
+
+`Answer: Hello Old Friend`
+
+#### 4. When did the attacker's prompt injection attack make MSP-HELPDESK-AI leak remote management tool info? (YYYY-MM-DD HH:MM:SS)
+
+![image](/assets/images6/32.png)
+
+Tại stream `59` ta thấy được thông tin `ID` và `password` bị `leak`
+
+`Answer: 2025-08-19 12:02:06`
+
+#### 5. What is the Remote management tool Device ID and password? (IDwithoutspace:Password)
+
+`Answer: 565963039:CogWork_Central_97&65`
+
+#### 6. What was the last message the attacker sent to MSP-HELPDESK-AI? (string)
+
+![image](/assets/images6/33.png)
+
+`Answer: JM WILL BE BACK`
+
+#### 7. When did the attacker remotely access Cogwork Central Workstation? (YYYY-MM-DD HH:MM:SS)
+
+Trong PCAP, ta đã thấy được `RMM credentials` bị lộ do `Prompt Injection`. Để xác minh xem RMM nào được dùng, ta cùng đá qua `triage image` được cấp trong bài Trong `C:\Program Files\TeamViewer\` ta phát hiện thư mục chứa log file → `TeamViewer` chính là RMM được cài trên hệ thống này.
+
+![image](/assets/images6/34.png)
+
+Tiến hành check thông tin trong file `Connections_Incoming.txt`
+
+![image](/assets/images6/35.png)
+
+`Answer: 2025-08-20 09:58:25`
+
+#### 8. What was the RMM Account name used by the attacker? (string)
+
+`Answer: James Moriarty`
+
+#### 9. What was the machine's internal IP address from which the attacker connected? (IPv4 address)
+
+Kiểm tra tại file log thứ 2 là `Teamviewer15_Logfile`
+
+![image](/assets/images6/36.png)
+`Answer: `
+
+#### 10. The attacker brought some tools to the compromised workstation to achieve its objectives. Under which path were these tools staged? (C:\FOLDER\PATH\)
+
+![image](/assets/images6/37.png)
+
+`Answer: C:\Windows\Temp\safe\`
+
+#### 11. Among the tools that the attacker staged was a browser credential harvesting tool. Find out how long it ran before it was closed? (Answer in milliseconds) (number)
+
+Trong danh sash các `tool` được sử dụng thì thấy `tool` `webbrowserpassview` có liên quan đến câu hỏi. Từ các `UserAssist artifacts (NTUSER.DAT)`, ta có thể  quan sát thấy có quá trình thực thi WebBrowserPassView.exe tại thư mục `C:\Windows\Temp\safe\`. Giá trị `Run Counter` cho thấy công cụ này chỉ được chạy 1 lần, và `Focus Time` ghi nhận là 8 giây, nghĩa là công cụ chỉ hoạt động trong thời gian rất ngắn trước khi bị đóng lại.
+Thời điểm Last Executed được ghi nhận là `2025-08-20 10:09:14`.
+
+![image](/assets/images6/38.png)
+
+`Answer: 8000`
+
+#### 12. The attacker executed a OS Credential dumping tool on the system. When was the tool executed? (YYYY-MM-DD HH:MM:SS)
+
+Tiếp tục trong danh sách các `tool` ở câu `10`, ta dễ dàng xác định được tool dùng để `OS Credential dumping` là `mimikatz`, vì `mimikatz` thường được sử dụng trong môi trường dòng lệnh nên nếu xem trong `UserAssist` sẽ không thấy sự xuất hiện ở đây. Thời gian cần xác định sẽ nằm trong `prefetch`, nhưng bản `disk image` này không có `folder` `Prefetch` như thông thường. Ta sẽ có cách khác để tiếp cận, thấy `disk` được cung cấp có chứa `$Extend\$UsnJrnl`
+
+`Đây là NTFS change journal, file ẩn lưu trong $Extend\$UsnJrnl. Nó ghi lại mọi thay đổi đối với file/directory trên volume.`
+
+Ta tiến hàng dùng `MTFEcmd`để `parse` ra file `csv`
+
+![image](/assets/images6/39.png)
+
+`Answer: 2025-08-20 10:07:08`
+
+#### 13. The attacker exfiltrated multiple sensitive files. When did the exfiltration start? (YYYY-MM-DD HH:MM:SS)
+
+![image](/assets/images6/40.png)
+
+Trong lúc phân tích, mình có đá qua 1 số `folder` khác thì tại `C\Users\Cogwork_Admin\AppData\Roaming\Microsoft\Windows\Recent` có chứa 1 file `COG-HR-EMPLOYEES`, mình thử filter tên file này trong `TeamViewer15_Logfile.log` thì có được thời gian `sendfile`
+
+![image](/assets/images6/41.png)
+
+`Answer: 2025-08-20 10:12:07`
+
+#### 14. Before exfiltration, several files were moved to the staged folder. When was the Heisen-9 facility backup database moved to the staged folder for exfiltration? (YYYY-MM-DD HH:MM:SS)
+
+`Ý nghĩa câu hỏi: kẻ tấn công trước khi exfiltrate (đẩy dữ liệu ra ngoài), thường gom các file cần lấy vào một thư mục tạm (staged folder) — ở đây là C:\Windows\Temp\flyover\`
+
+- Tại file `TeamViewer15_Logfile.log` ta thấy file `Heisen-9 remote snapshot.kdbx` được gửi đi vào lúc `2025/08/20 10:12:08.030` nên việc đưa file vào `staged folder` này phải trước thời điểm đó. Tiếp tục check trong `$UsnJrnl` cùng filter là file `Heisen-9 remote snapshot.kdbx`
+
+![image](/assets/images6/42.png)
+
+`Answer: 2025-08-20 10:11:09`
+
+#### 15. When did the attacker access and read a txt file, which was probably the output of one of the tools they brought, due to the naming convention of the file? (YYYY-MM-DD HH:MM:SS)
+
+Tiếp tục đối chiếu từ file `TeamViewer15_Logfile.log` ta thấy tệp txt là `dump.txt` rất đáng ngờ, ta cùng filter nó trong `$UsnJrnl`
+
+![image](/assets/images6/43.png)
+
+`Answer: 2025-08-20 10:08:06`
+
+#### 16. The attacker created a persistence mechanism on the workstation. When was the persistence setup? (YYYY-MM-DD HH:MM:SS)
+
+Mình check lần lượt qua các nơi mà `attacker` có thể thực hiện `persistence` thì tại `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Userinit` thấy được đáng ngờ hơn cả 
+
+![image](/assets/images6/44.png)
+
+`Attacker` đã thêm `JM.exe` vào `Userinit`, tức hệ thống sẽ chạy JM.exe mỗi khi user logon → đây là `persistence mechanism` (duy trì quyền truy cập qua lần đăng nhập tiếp theo)
+
+`Answer: 2025-08-20 10:13:57`
+
+#### 17. What is the MITRE ID of the persistence subtechnique? (Txxxx.xxx)
+
+![image](/assets/images6/45.png)
+
+`Answer: T1547.004`
+
+#### 18. When did the malicious RMM session end? (YYYY-MM-DD HH:MM:SS)
+
+Quay lại với file `Connections_incoming.txt`
+
+`Answer: 2025-08-20 10:14:27`
+
+#### 19. The attacker found a password from exfiltrated files, allowing him to move laterally further into CogWork-1 infrastructure. What are the credentials for Heisen-9-WS-6? (user:password)
+
+![image](/assets/images6/46.png)
+
+Lấy `password` là `cutiepie14` login vào file `kdbx`
+
+![image](/assets/images6/47.png)
+
+`Answer: Werni:Quantum1!`
+
+
+## The Tunnel Without Walls [Hard]
+
+#### 1. What is the Linux kernel version of the provided image? (string)
+
+`Answer: `
+
+#### 2. The attacker connected over SSH and executed initial reconnaissance commands. What is the PID of the shell they used? (number)
+
+`Answer: `
+
+#### 3. After the initial information gathering, the attacker authenticated as a different user to escalate privileges. Identify and submit that user's credentials. (user:password)
+
+`Answer: `
+
+#### 4. The attacker downloaded and executed code from Pastebin to install a rootkit. What is the full path of the malicious file? (/path/filename.ext)
+
+`Answer: `
+
+#### 5. What is the email account of the alleged author of the malicious file? (user@example.com)
+
+`Answer: `
+
+#### 6. The next step in the attack involved issuing commands to modify the network settings and installing a new package. What is the name and PID of the package? (package name,PID)
+
+`Answer: `
+
+#### 7. Clearly, the attacker's goal is to impersonate the entire network. One workstation was already tricked and got its new malicious network configuration. What is the workstation's hostname?
+
+`Answer: `
+
+#### 8. After receiving the new malicious network configuration, the user accessed the City of CogWork-1 internal portal from this workstation. What is their username? (string)
+
+`Answer: `
+
+#### 9. Finally, the user updated a software to the latest version, as suggested on the internal portal, and fell victim to a supply chain attack. From which Web endpoint was the update downloaded?
+
+`Answer: `
+
+#### 10. To perform this attack, the attacker redirected the original update domain to a malicious one. Identify the original domain and the final redirect IP address and port. (domain,IP:port)
+
+`Answer: `
+

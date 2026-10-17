@@ -1,0 +1,99 @@
+---
+import Link from '@/components/Link.astro'
+import { buttonVariants } from '@/components/ui/button'
+import { ICON_MAP, SOCIAL_LINKS } from '@/consts'
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  image?: string
+  quote?: string
+  class?: string
+}
+
+const {
+  image = '/placeholder-profile.jpg',
+  quote = 'A little each day adds up to a lot.',
+  class: className = '',
+} = Astro.props
+---
+
+<aside
+  class={`rounded-lg border overflow-hidden flex flex-col w-64 shrink-0 h-full ${className}`}
+>
+  <!-- Profile Image -->
+  <div class="flex w-full shrink-0 items-center justify-center p-4">
+    {
+      image && (
+        <img
+          src={image}
+          alt="Profile"
+          class="h-24 w-24 cursor-pointer rounded-full object-contain transition-transform duration-500 hover:rotate-360"
+          style="transition: transform 0.6s ease-in-out;"
+          onmouseover="this.style.transform='rotate(360deg)'"
+          onmouseout="this.style.transform='rotate(0deg)'"
+        />
+      )
+    }
+  </div>
+
+  <!-- Content Section -->
+  <div class="flex flex-1 flex-col justify-between gap-2 p-4">
+    <div class="flex flex-col gap-2">
+      <!-- Quote/Bio Row -->
+      <div class="flex items-start gap-1.5">
+        <Icon
+          name="lucide:quote"
+          class="text-muted-foreground mt-0.5 size-3.5 shrink-0"
+        />
+        <p class="text-muted-foreground text-xs leading-snug italic">
+          {quote}
+        </p>
+      </div>
+
+      <!-- Follow Button Row -->
+      <Link
+        href="https://github.com/yuhrt05"
+        class={buttonVariants({ variant: 'default', size: 'sm' }) + ' w-full'}
+        external
+      >
+        <Icon name="lucide:user-plus" class="mr-1.5 size-3.5" />
+        Follow Me
+      </Link>
+    </div>
+
+    <!-- Contact Icons Row -->
+    <div class="border-t pt-2">
+      <p
+        class="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase"
+      >
+        Connect
+      </p>
+      <ul class="flex flex-wrap gap-1.5" role="list">
+        {
+          SOCIAL_LINKS.map(({ href, label }) => (
+            <li>
+              <Link
+                href={href}
+                aria-label={label}
+                title={label}
+                class={
+                  buttonVariants({ variant: 'outline', size: 'icon' }) +
+                  ' h-8 w-8'
+                }
+                external
+              >
+                <Icon
+                  name={
+                    ICON_MAP[label as keyof typeof ICON_MAP] ||
+                    'lucide:message-circle-question'
+                  }
+                  class="size-3.5"
+                />
+              </Link>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</aside>
