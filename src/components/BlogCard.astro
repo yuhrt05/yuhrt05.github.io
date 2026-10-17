@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator'
 import {
   getCombinedReadingTime,
   getSubpostCount,
+  isCTFPost,
   isSubpost,
   parseAuthors,
 } from '@/lib/data-utils'
@@ -23,6 +24,7 @@ const formattedDate = formatDate(entry.data.date)
 const readTime = await getCombinedReadingTime(entry.id)
 const authors = await parseAuthors(entry.data.authors ?? [])
 const subpostCount = !isSubpost(entry.id) ? await getSubpostCount(entry.id) : 0
+const isCTF = isCTFPost(entry)
 ---
 
 <div
@@ -51,9 +53,24 @@ const subpostCount = !isSubpost(entry.id) ? await getSubpostCount(entry.id) : 0
       <div>
         {/* Meta Header */}
         <div class="mb-2 flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-muted-foreground">
-          <div class="flex items-center gap-1.5 font-medium text-foreground">
-            <Icon name="lucide:calendar" class="size-3 text-muted-foreground" />
-            <span>{formattedDate}</span>
+          <div class="flex items-center gap-2 font-medium">
+            {
+              isCTF ? (
+                <span class="inline-flex items-center gap-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 text-[10px] uppercase font-semibold">
+                  <Icon name="lucide:flag" class="size-2.5" />
+                  CTF
+                </span>
+              ) : (
+                <span class="inline-flex items-center gap-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 text-[10px] uppercase font-semibold">
+                  <Icon name="lucide:flask-conical" class="size-2.5" />
+                  LAB
+                </span>
+              )
+            }
+            <div class="flex items-center gap-1 text-muted-foreground">
+              <Icon name="lucide:calendar" class="size-3 text-muted-foreground" />
+              <span>{formattedDate}</span>
+            </div>
           </div>
 
           <div class="flex items-center gap-2">

@@ -3,9 +3,14 @@ import BlogCard from '@/components/BlogCard.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import PaginationComponent from '@/components/ui/pagination'
-import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
-import { getAllPosts, groupPostsByYear } from '@/lib/data-utils'
+import {
+  getAllPosts,
+  groupPostsByYear,
+  isCTFPost,
+  isLabPost,
+} from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
 import type { PaginateFunction } from 'astro'
 
 export async function getStaticPaths({
@@ -14,13 +19,20 @@ export async function getStaticPaths({
   paginate: PaginateFunction
 }) {
   const allPosts = await getAllPosts()
-  return paginate(allPosts, { pageSize: SITE.postsPerPage })
+  return paginate(allPosts, { pageSize: 50 })
 }
 
 const { page } = Astro.props
 
-const postsByYear = groupPostsByYear(page.data)
-const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
+const allPosts = page.data
+const ctfPosts = allPosts.filter(isCTFPost)
+const labPosts = allPosts.filter(isLabPost)
+
+const ctfByYear = groupPostsByYear(ctfPosts)
+const ctfYears = Object.keys(ctfByYear).sort((a, b) => parseInt(b) - parseInt(a))
+
+const labsByYear = groupPostsByYear(labPosts)
+const labsYears = Object.keys(labsByYear).sort((a, b) => parseInt(b) - parseInt(a))
 ---
 
 <Layout class="max-w-4xl">
@@ -28,46 +40,206 @@ const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
   <Breadcrumbs
     items={[
       { label: 'Dossiers', href: '/blog', icon: 'lucide:library-big' },
-      { label: `Page ${page.currentPage}`, icon: 'lucide:book-copy' },
+      { label: 'Archive', icon: 'lucide:book-copy' },
     ]}
   />
 
   <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
-    <div class="flex flex-col gap-y-1 font-mono">
+    {/* Page Header */}
+    <div class="flex flex-col gap-y-2 font-mono">
       <div class="flex items-center gap-2">
         <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground uppercase">
-          Articles & Write-ups
+          Investigation Dossiers
         </h1>
       </div>
       <p class="text-xs text-muted-foreground">
-        All {page.total} posts, notes, and technical write-ups.
+        All {allPosts.length} posts separated into CTF competitions and practical DFIR / SIEM research labs.
       </p>
+
+      {/* Category Filter Tabs */}
+      <div class="mt-3 flex flex-wrap items-center gap-2" id="category-tabs" role="tablist">
+        <button
+          type="button"
+          data-tab="all"
+          class="tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-foreground text-background shadow-sm"
+        >
+          <Icon name="lucide:layout-grid" class="size-3.5" />
+          <span>Tất cả</span>
+          <span class="rounded bg-background/20 px-1 py-0.2 text-[10px] font-mono">
+            {allPosts.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-tab="ctf"
+          class="tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/40"
+        >
+          <Icon name="lucide:flag" class="size-3.5 text-red-400" />
+          <span>Giải CTF</span>
+          <span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-foreground font-semibold">
+            {ctfPosts.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-tab="labs"
+          class="tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/40"
+        >
+          <Icon name="lucide:flask-conical" class="size-3.5 text-blue-400" />
+          <span>Labs & Nghiên cứu</span>
+          <span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-foreground font-semibold">
+            {labPosts.length}
+          </span>
+        </button>
+      </div>
     </div>
 
-    {
-      years.map((year) => (
-        <section class="flex flex-col gap-y-4">
-          <div class="flex items-center gap-3 font-mono text-xs text-muted-foreground border-b border-border/60 pb-1.5">
-            <span class="text-foreground font-semibold">{year}</span>
-            <div class="h-px flex-1 bg-border/60"></div>
-            <span>{postsByYear[year].length} posts</span>
+    {/* Section 1: CTF Write-ups */}
+    <section id="section-ctf" class="category-section flex flex-col gap-y-6">
+      <div class="flex flex-col gap-1 rounded-lg border border-red-500/20 bg-red-500/5 p-4">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="flex size-7 items-center justify-center rounded-md bg-red-500/10 text-red-400 border border-red-500/20">
+              <Icon name="lucide:flag" class="size-4" />
+            </span>
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-foreground uppercase font-mono">
+              Giải CTF / Write-ups
+            </h2>
           </div>
-          <ul class="flex flex-col gap-3.5">
-            {postsByYear[year].map((post) => (
-              <li>
-                <BlogCard entry={post} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))
-    }
+          <span class="font-mono text-xs text-red-400/90 font-medium bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
+            {ctfPosts.length} bài viết
+          </span>
+        </div>
+        <p class="text-xs text-muted-foreground pl-9">
+          Các bài write-up phân tích Forensics, Reverse Engineering và Memory Analysis từ các giải CTF.
+        </p>
+      </div>
+
+      {
+        ctfYears.map((year) => (
+          <div class="flex flex-col gap-y-3.5">
+            <div class="flex items-center gap-3 font-mono text-xs text-muted-foreground border-b border-border/60 pb-1.5">
+              <span class="text-foreground font-semibold">{year}</span>
+              <div class="h-px flex-1 bg-border/60"></div>
+              <span>{ctfByYear[year].length} bài</span>
+            </div>
+            <ul class="flex flex-col gap-3.5">
+              {ctfByYear[year].map((post) => (
+                <li>
+                  <BlogCard entry={post} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </section>
+
+    {/* Section 2: DFIR & SIEM Labs */}
+    <section id="section-labs" class="category-section flex flex-col gap-y-6 pt-2">
+      <div class="flex flex-col gap-1 rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="flex size-7 items-center justify-center rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              <Icon name="lucide:flask-conical" class="size-4" />
+            </span>
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-foreground uppercase font-mono">
+              DFIR & SIEM Labs
+            </h2>
+          </div>
+          <span class="font-mono text-xs text-blue-400/90 font-medium bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+            {labPosts.length} bài viết
+          </span>
+        </div>
+        <p class="text-xs text-muted-foreground pl-9">
+          Bóc tách malware thực tế (DLL side-loading, unpack shellcode), điều tra số (Sherlock) và xây dựng hệ thống SIEM / Detection-as-Code.
+        </p>
+      </div>
+
+      {
+        labsYears.map((year) => (
+          <div class="flex flex-col gap-y-3.5">
+            <div class="flex items-center gap-3 font-mono text-xs text-muted-foreground border-b border-border/60 pb-1.5">
+              <span class="text-foreground font-semibold">{year}</span>
+              <div class="h-px flex-1 bg-border/60"></div>
+              <span>{labsByYear[year].length} bài</span>
+            </div>
+            <ul class="flex flex-col gap-3.5">
+              {labsByYear[year].map((post) => (
+                <li>
+                  <BlogCard entry={post} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </section>
   </div>
 
-  <PaginationComponent
-    currentPage={page.currentPage}
-    totalPages={page.lastPage}
-    baseUrl="/blog/"
-    client:load
-  />
+  {
+    page.lastPage > 1 && (
+      <PaginationComponent
+        currentPage={page.currentPage}
+        totalPages={page.lastPage}
+        baseUrl="/blog/"
+        client:load
+      />
+    )
+  }
 </Layout>
+
+<script is:inline>
+  function setupCategoryTabs() {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const sectionCtf = document.getElementById('section-ctf');
+    const sectionLabs = document.getElementById('section-labs');
+
+    if (!tabs.length || !sectionCtf || !sectionLabs) return;
+
+    function applyTab(selectedTab) {
+      tabs.forEach((btn) => {
+        const isCurrent = btn.getAttribute('data-tab') === selectedTab;
+        if (isCurrent) {
+          btn.className = 'tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-foreground text-background shadow-sm';
+        } else {
+          btn.className = 'tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/40';
+        }
+      });
+
+      if (selectedTab === 'ctf') {
+        sectionCtf.style.display = 'flex';
+        sectionLabs.style.display = 'none';
+      } else if (selectedTab === 'labs') {
+        sectionCtf.style.display = 'none';
+        sectionLabs.style.display = 'flex';
+      } else {
+        sectionCtf.style.display = 'flex';
+        sectionLabs.style.display = 'flex';
+      }
+    }
+
+    // Check URL hash
+    const initialHash = window.location.hash.replace('#', '');
+    if (['all', 'ctf', 'labs'].includes(initialHash)) {
+      applyTab(initialHash);
+    } else {
+      applyTab('all');
+    }
+
+    tabs.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab');
+        applyTab(tab);
+        window.history.replaceState(null, '', tab === 'all' ? window.location.pathname : `#${tab}`);
+      });
+    });
+  }
+
+  // Run on initial load and View Transitions
+  setupCategoryTabs();
+  document.addEventListener('astro:after-swap', setupCategoryTabs);
+  document.addEventListener('astro:page-load', setupCategoryTabs);
+</script>

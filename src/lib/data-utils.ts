@@ -15,6 +15,16 @@ export async function getAllPosts(): Promise<CollectionEntry<'blog'>[]> {
     )
 }
 
+export function isCTFPost(post: CollectionEntry<'blog'>): boolean {
+  const title = (post.data?.title || '').toLowerCase()
+  const tags = (post.data?.tags || []).map((t) => t.toLowerCase())
+  return tags.includes('ctf') || title.includes('ctf')
+}
+
+export function isLabPost(post: CollectionEntry<'blog'>): boolean {
+  return !isCTFPost(post)
+}
+
 export async function getAllPostsAndSubposts(): Promise<
   CollectionEntry<'blog'>[]
 > {
