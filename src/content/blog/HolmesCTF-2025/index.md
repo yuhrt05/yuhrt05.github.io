@@ -3,7 +3,7 @@ title: "Holmes CTF 2025"
 description: "Technical write-up: Holmes CTF 2025"
 date: 2025-09-26
 authors: [ane]
-tags: ["Hackthebox", "forensics", "CTF"]
+tags: ["CTF", "HackTheBox", "Forensics", "Threat Hunting", "Webshell", "CTI", "Persistence"]
 image: "./assets/banner.jpg"
 ---
 

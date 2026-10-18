@@ -3,7 +3,7 @@ title: "DeadSecCTF 2025"
 description: "Technical write-up: DeadSecCTF 2025"
 date: 2025-07-28
 authors: [ane]
-tags: ["forensics", "CTF"]
+tags: ["CTF", "Forensics", "Memory Forensics", "Phishing", "Telegram", "Incident Response"]
 image: "./assets/banner.png"
 ---
 

@@ -3,7 +3,7 @@ title: "DFIR LAB 01: Korplug RAT"
 description: "Phân tích mẫu Korplug RAT: DLL side-loading, unpacking/manual mapping, persistence, process injection và liên lạc C2."
 date: 2026-01-03
 authors: [ane]
-tags: [malware analysis, static analysis, dynamic analysis, autoruns, mitre-attack, persistence]
+tags: ["DFIR", "Malware Analysis", "Static Analysis", "Dynamic Analysis", "Autoruns", "MITRE ATT&CK", "Persistence"]
 image: "./assets/banner.jpg"
 ---
 

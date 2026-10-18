@@ -3,7 +3,7 @@ title: "BKISC CTF 2026"
 description: "Technical write-up: BKISC CTF 2026"
 date: 2026-05-15
 authors: [ane]
-tags: ["CTF", "forensics"]
+tags: ["CTF", "Forensics", "Memory Forensics", "DPAPI", "Steganography", "Browser Forensics"]
 image: "./assets/banner.png"
 ---
 

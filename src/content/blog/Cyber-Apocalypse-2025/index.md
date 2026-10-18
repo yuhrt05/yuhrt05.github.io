@@ -3,7 +3,7 @@ title: "Cyber Apocalypse 2025"
 description: "Technical write-up: Cyber Apocalypse 2025"
 date: 2025-03-26
 authors: [ane]
-tags: ["Hackthebox", "forensics", "CTF"]
+tags: ["CTF", "HackTheBox", "Forensics", "Browser Forensics", "Chrome Extension", "Credential Theft", "Log Analysis"]
 image: "./assets/banner.jpg"
 ---
 

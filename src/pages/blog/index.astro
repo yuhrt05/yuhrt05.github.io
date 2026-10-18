@@ -2,7 +2,6 @@
 import BlogCard from '@/components/BlogCard.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
-import PaginationComponent from '@/components/ui/pagination'
 import Layout from '@/layouts/Layout.astro'
 import {
   getAllPosts,
@@ -11,20 +10,8 @@ import {
   isLabPost,
 } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
-import type { PaginateFunction } from 'astro'
 
-export async function getStaticPaths({
-  paginate,
-}: {
-  paginate: PaginateFunction
-}) {
-  const allPosts = await getAllPosts()
-  return paginate(allPosts, { pageSize: 50 })
-}
-
-const { page } = Astro.props
-
-const allPosts = page.data
+const allPosts = await getAllPosts()
 const ctfPosts = allPosts.filter(isCTFPost)
 const labPosts = allPosts.filter(isLabPost)
 
@@ -36,11 +23,11 @@ const labsYears = Object.keys(labsByYear).sort((a, b) => parseInt(b) - parseInt(
 ---
 
 <Layout class="max-w-4xl">
-  <PageHead slot="head" title="Investigation Dossiers" />
+  <PageHead slot="head" title="Articles & Write-ups" />
   <Breadcrumbs
     items={[
-      { label: 'Dossiers', href: '/blog', icon: 'lucide:library-big' },
-      { label: 'Archive', icon: 'lucide:book-copy' },
+      { label: 'Blog', href: '/blog', icon: 'lucide:library-big' },
+      { label: 'All', icon: 'lucide:book-copy' },
     ]}
   />
 
@@ -49,11 +36,11 @@ const labsYears = Object.keys(labsByYear).sort((a, b) => parseInt(b) - parseInt(
     <div class="flex flex-col gap-y-2 font-mono">
       <div class="flex items-center gap-2">
         <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground uppercase">
-          Investigation Dossiers
+          Articles & Write-ups
         </h1>
       </div>
       <p class="text-xs text-muted-foreground">
-        All {allPosts.length} posts separated into CTF competitions and practical DFIR / SIEM research labs.
+        {allPosts.length} posts categorized into Labs & Research and CTFs.
       </p>
 
       {/* Category Filter Tabs */}
@@ -64,21 +51,9 @@ const labsYears = Object.keys(labsByYear).sort((a, b) => parseInt(b) - parseInt(
           class="tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-foreground text-background shadow-sm"
         >
           <Icon name="lucide:layout-grid" class="size-3.5" />
-          <span>Tất cả</span>
+          <span>All</span>
           <span class="rounded bg-background/20 px-1 py-0.2 text-[10px] font-mono">
             {allPosts.length}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          data-tab="ctf"
-          class="tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/40"
-        >
-          <Icon name="lucide:flag" class="size-3.5 text-red-400" />
-          <span>Giải CTF</span>
-          <span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-foreground font-semibold">
-            {ctfPosts.length}
           </span>
         </button>
 
@@ -87,84 +62,50 @@ const labsYears = Object.keys(labsByYear).sort((a, b) => parseInt(b) - parseInt(
           data-tab="labs"
           class="tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/40"
         >
-          <Icon name="lucide:flask-conical" class="size-3.5 text-blue-400" />
-          <span>Labs & Nghiên cứu</span>
+          <Icon name="lucide:flask-conical" class="size-3.5" />
+          <span>Labs and Research</span>
           <span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-foreground font-semibold">
             {labPosts.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          data-tab="ctf"
+          class="tab-btn inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/40"
+        >
+          <Icon name="lucide:flag" class="size-3.5" />
+          <span>CTFs</span>
+          <span class="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-foreground font-semibold">
+            {ctfPosts.length}
           </span>
         </button>
       </div>
     </div>
 
-    {/* Section 1: CTF Write-ups */}
-    <section id="section-ctf" class="category-section flex flex-col gap-y-6">
-      <div class="flex flex-col gap-1 rounded-lg border border-red-500/20 bg-red-500/5 p-4">
-        <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="flex size-7 items-center justify-center rounded-md bg-red-500/10 text-red-400 border border-red-500/20">
-              <Icon name="lucide:flag" class="size-4" />
-            </span>
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-foreground uppercase font-mono">
-              Giải CTF / Write-ups
-            </h2>
-          </div>
-          <span class="font-mono text-xs text-red-400/90 font-medium bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
-            {ctfPosts.length} bài viết
-          </span>
+    {/* Section 1: Labs and Research */}
+    <section id="section-labs" class="category-section flex flex-col gap-y-6">
+      <div class="flex items-center justify-between gap-3 border-b border-border pb-2.5 font-mono">
+        <div class="flex items-center gap-2">
+          <Icon name="lucide:flask-conical" class="size-4 text-muted-foreground" />
+          <h2 class="text-base sm:text-lg font-bold tracking-tight text-foreground uppercase">
+            Labs and Research
+          </h2>
         </div>
-        <p class="text-xs text-muted-foreground pl-9">
-          Các bài write-up phân tích Forensics, Reverse Engineering và Memory Analysis từ các giải CTF.
-        </p>
-      </div>
-
-      {
-        ctfYears.map((year) => (
-          <div class="flex flex-col gap-y-3.5">
-            <div class="flex items-center gap-3 font-mono text-xs text-muted-foreground border-b border-border/60 pb-1.5">
-              <span class="text-foreground font-semibold">{year}</span>
-              <div class="h-px flex-1 bg-border/60"></div>
-              <span>{ctfByYear[year].length} bài</span>
-            </div>
-            <ul class="flex flex-col gap-3.5">
-              {ctfByYear[year].map((post) => (
-                <li>
-                  <BlogCard entry={post} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
-    </section>
-
-    {/* Section 2: DFIR & SIEM Labs */}
-    <section id="section-labs" class="category-section flex flex-col gap-y-6 pt-2">
-      <div class="flex flex-col gap-1 rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
-        <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="flex size-7 items-center justify-center rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              <Icon name="lucide:flask-conical" class="size-4" />
-            </span>
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-foreground uppercase font-mono">
-              DFIR & SIEM Labs
-            </h2>
-          </div>
-          <span class="font-mono text-xs text-blue-400/90 font-medium bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-            {labPosts.length} bài viết
-          </span>
-        </div>
-        <p class="text-xs text-muted-foreground pl-9">
-          Bóc tách malware thực tế (DLL side-loading, unpack shellcode), điều tra số (Sherlock) và xây dựng hệ thống SIEM / Detection-as-Code.
-        </p>
+        <span class="text-xs text-muted-foreground">
+          {labPosts.length} posts
+        </span>
       </div>
 
       {
         labsYears.map((year) => (
-          <div class="flex flex-col gap-y-3.5">
-            <div class="flex items-center gap-3 font-mono text-xs text-muted-foreground border-b border-border/60 pb-1.5">
-              <span class="text-foreground font-semibold">{year}</span>
-              <div class="h-px flex-1 bg-border/60"></div>
-              <span>{labsByYear[year].length} bài</span>
+          <div class="flex flex-col gap-y-3">
+            <div class="flex items-center font-mono">
+              <span class="inline-flex items-center gap-2 rounded bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground border border-border/50">
+                <span class="font-semibold text-foreground">{year}</span>
+                <span class="h-2.5 w-px bg-border"></span>
+                <span class="text-[11px]">{labsByYear[year].length} posts</span>
+              </span>
             </div>
             <ul class="flex flex-col gap-3.5">
               {labsByYear[year].map((post) => (
@@ -177,18 +118,43 @@ const labsYears = Object.keys(labsByYear).sort((a, b) => parseInt(b) - parseInt(
         ))
       }
     </section>
-  </div>
 
-  {
-    page.lastPage > 1 && (
-      <PaginationComponent
-        currentPage={page.currentPage}
-        totalPages={page.lastPage}
-        baseUrl="/blog/"
-        client:load
-      />
-    )
-  }
+    {/* Section 2: CTFs */}
+    <section id="section-ctf" class="category-section flex flex-col gap-y-6 pt-2">
+      <div class="flex items-center justify-between gap-3 border-b border-border pb-2.5 font-mono">
+        <div class="flex items-center gap-2">
+          <Icon name="lucide:flag" class="size-4 text-muted-foreground" />
+          <h2 class="text-base sm:text-lg font-bold tracking-tight text-foreground uppercase">
+            CTFs
+          </h2>
+        </div>
+        <span class="text-xs text-muted-foreground">
+          {ctfPosts.length} posts
+        </span>
+      </div>
+
+      {
+        ctfYears.map((year) => (
+          <div class="flex flex-col gap-y-3">
+            <div class="flex items-center font-mono">
+              <span class="inline-flex items-center gap-2 rounded bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground border border-border/50">
+                <span class="font-semibold text-foreground">{year}</span>
+                <span class="h-2.5 w-px bg-border"></span>
+                <span class="text-[11px]">{ctfByYear[year].length} posts</span>
+              </span>
+            </div>
+            <ul class="flex flex-col gap-3.5">
+              {ctfByYear[year].map((post) => (
+                <li>
+                  <BlogCard entry={post} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </section>
+  </div>
 </Layout>
 
 <script is:inline>

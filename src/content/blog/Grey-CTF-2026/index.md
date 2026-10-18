@@ -3,7 +3,7 @@ title: "GREY CTF 2026"
 description: "Technical write-up: GREY CTF 2026"
 date: 2026-05-31
 authors: [ane]
-tags: ["CTF", "forensics"]
+tags: ["CTF", "Forensics", "Mobile Forensics", "Telegram", "Geolocation", "Disk Forensics"]
 image: "./assets/banner2.png"
 ---
 

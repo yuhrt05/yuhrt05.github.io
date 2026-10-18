@@ -3,7 +3,7 @@ title: "Sherlock: Latus [Hard]"
 description: "Technical write-up: Sherlock: Latus [Hard]"
 date: 2025-05-31
 authors: [ane]
-tags: ["Hackthebox", "forensics", "SherLock"]
+tags: ["HackTheBox", "Sherlock", "DFIR", "Forensics", "RDP Forensics", "Event Logs", "Lateral Movement"]
 image: "./assets/banner.jpg"
 ---
 

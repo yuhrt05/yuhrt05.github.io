@@ -3,7 +3,7 @@ title: "SIEM LAB 01: Wazuh-Based Persistence & C2 Detection"
 description: "Technical write-up: SIEM LAB 01: Wazuh-Based Persistence & C2 Detection"
 date: 2025-08-15
 authors: [ane]
-tags: ["Wazuh", "Phishing email", "Reverse shell", "Persistence", "Exfiltration Data", "SIEM LAB"]
+tags: ["SIEM", "Wazuh", "Phishing Email", "Reverse Shell", "Persistence", "Data Exfiltration"]
 image: "./assets/banner.png"
 ---
 

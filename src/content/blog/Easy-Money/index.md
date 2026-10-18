@@ -3,7 +3,7 @@ title: "Sherlock: Easy Money [Medium]"
 description: "Technical write-up: Sherlock: Easy Money [Medium]"
 date: 2026-04-23
 authors: [ane]
-tags: ["Hackthebox", "forensics", "SherLock"]
+tags: ["HackTheBox", "Sherlock", "DFIR", "Forensics", "LNK Analysis", "LOLBAS", "Persistence"]
 image: "./assets/banner.jpg"
 ---
 

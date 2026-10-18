@@ -3,7 +3,7 @@ title: "Midnight Flag CTF 2026"
 description: "Technical write-up: Midnight Flag CTF 2026"
 date: 2026-03-16
 authors: [ane]
-tags: ["Threat Hunting", "Log analysis", "CVE-2024-9264", "CVE-2025-33073", "CTF"]
+tags: ["CTF", "Threat Hunting", "Log Analysis", "CVE-2024-9264", "CVE-2025-33073", "Active Directory"]
 image: "./assets/banner.png"
 ---
 

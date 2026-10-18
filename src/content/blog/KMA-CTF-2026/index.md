@@ -3,7 +3,7 @@ title: "KMA CTF 2026 - LẦN I"
 description: "Technical write-up: KMA CTF 2026 - LẦN I"
 date: 2026-05-25
 authors: [ane]
-tags: ["KMACTF", "CTF", "DFIR", "Forensics", "Malware Analysis", "Reverse Engineering", "Windows", "PowerShell", "ClickFix", "Shellcode", "Donut", "Process Injection", "Infostealer", "Credential Stealing", "C2", "Data Exfiltration", "Persistence", "RAT", "MITRE ATT&CK"]
+tags: ["KMACTF", "CTF", "DFIR", "Malware Analysis", "Reverse Engineering", "Windows", "PowerShell", "ClickFix", "Process Injection", "C2", "Persistence", "RAT"]
 image: "./assets/banner.jpg"
 ---
 

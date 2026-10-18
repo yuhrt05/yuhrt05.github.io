@@ -3,7 +3,7 @@ title: "Sherlock: Kraken [Medium]"
 description: "Technical write-up: Sherlock: Kraken [Medium]"
 date: 2026-07-15
 authors: [ane]
-tags: [HackTheBox, Sherlock, DFIR, Malware Analysis, Windows, .NET, PowerShell, Obfuscation, AMSI, C2]
+tags: ["HackTheBox", "Sherlock", "DFIR", "Malware Analysis", "Windows", ".NET", "PowerShell", "Obfuscation", "AMSI", "C2"]
 image: "./assets/banner.jpg"
 ---
 

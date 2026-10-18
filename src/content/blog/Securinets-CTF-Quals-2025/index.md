@@ -3,7 +3,7 @@ title: "Securinets CTF Quals 2025"
 description: "Technical write-up: Securinets CTF Quals 2025"
 date: 2025-10-05
 authors: [ane]
-tags: ["forensics", "CTF"]
+tags: ["CTF", "Forensics", "Disk Forensics", "Email Analysis", "Phishing", "C2 Analysis"]
 image: "./assets/banner.png"
 ---
 

@@ -3,7 +3,7 @@ title: "SIEM LAB 02: Xây dựng hệ thống Detections as Code (DaC) mini vớ
 description: "Technical write-up: SIEM LAB 02: Xây dựng hệ thống Detections as Code (DaC) mini với ELK Stack"
 date: 2026-03-01
 authors: [ane]
-tags: ["ELK Stack", "Detections as Code", "Python Scripting", "Elastic Security", "Sigma Rules", "BotTelegram", "SIEM LAB"]
+tags: ["SIEM", "ELK Stack", "Detection as Code", "Python Scripting", "Elastic Security", "Sigma Rules", "Telegram Bot"]
 image: "./assets/DaC.png"
 ---
 
@@ -114,4 +114,4 @@ Module này giúp chuyển detection thành hành động thực tế:
 
 Toàn bộ script Python, cấu hình Pipeline và hướng dẫn triển khai chi tiết có tại:
 
-### GitHub Repository: [![GitHub Repo](https://img.shields.io/badge/GitHub-SIEM--Automation--Project-blue?logo=github)](https://github.com/yuhrt05/SIEM-Automation-Project)
+### GitHub Repository: [![GitHub Repo](https://img.shields.io/badge/GitHub-SIEM--Automation--Project-blue?logo=github)](https://github.com/cuniuuu/SIEM-Automation-Project)

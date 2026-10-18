@@ -1,12 +1,16 @@
 ---
 import { COMMENT } from '@/consts'
+
+const isConfigured = Boolean(COMMENT.repo && COMMENT.repoId && COMMENT.categoryId)
 ---
 
-<div class="mt-10">
-  <section class="giscus mx-auto mt-10 w-full"></section>
-</div>
+{
+  isConfigured && (
+    <div class="mt-10">
+      <section class="giscus mx-auto mt-10 w-full" />
+    </div>
 
-<script is:inline define:vars={{ COMMENT }}>
+    <script is:inline define:vars={{ COMMENT }}>
   const getTheme = () => {
     const theme = localStorage.getItem('theme')
     return theme === 'dark' ? 'dark' : 'light'
@@ -73,3 +77,4 @@ import { COMMENT } from '@/consts'
     attributeFilter: ['data-theme'],
   })
 </script>
+)}

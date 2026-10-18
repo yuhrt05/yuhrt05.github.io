@@ -3,7 +3,7 @@ title: "PicoCTF 2025"
 description: "Technical write-up: PicoCTF 2025"
 date: 2025-03-16
 authors: [ane]
-tags: ["forensics", "CTF"]
+tags: ["CTF", "Forensics", "Network Forensics", "PCAP", "BitLocker", "Event Logs", "Steganography"]
 image: "./assets/banner.jpg"
 ---
 
