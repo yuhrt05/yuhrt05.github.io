@@ -36,6 +36,10 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: 'GitHub',
   },
   {
+    href: 'https://cyberdefenders.org/p/ANe/',
+    label: 'CyberDefenders',
+  },
+  {
     href: '/rss.xml',
     label: 'RSS',
   },
@@ -48,6 +52,7 @@ export const ICON_MAP: IconMap = {
   Twitter: 'lucide:twitter',
   Email: 'lucide:mail',
   RSS: 'lucide:rss',
+  CyberDefenders: 'simple-icons:cyberdefenders',
 }
 
 export const COMMENT: CommentConfig = {

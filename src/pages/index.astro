@@ -32,9 +32,32 @@ const recentPostsData = await Promise.all(
     {/* Minimalist Header */}
     <section class="space-y-3">
       <div class="space-y-1.5">
-        <h1 class="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-          yuhrt05
-        </h1>
+        <div class="flex items-center gap-2.5 sm:gap-3">
+          <h1 class="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+            yuhrt05
+          </h1>
+          <div class="flex items-center gap-1.5 pt-0.5">
+            <Link
+              href="https://github.com/yuhrt05"
+              aria-label="GitHub (yuhrt05)"
+              title="GitHub (yuhrt05)"
+              class="flex size-7 items-center justify-center rounded-md border border-border/50 bg-muted/20 text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:border-border transition-all"
+              external
+            >
+              <Icon name="lucide:github" class="size-3.5" />
+            </Link>
+
+            <Link
+              href="https://cyberdefenders.org/p/ANe/"
+              aria-label="CyberDefenders (ANe)"
+              title="CyberDefenders (ANe)"
+              class="flex size-7 items-center justify-center rounded-md border border-border/50 bg-muted/20 text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:border-border transition-all"
+              external
+            >
+              <Icon name="simple-icons:cyberdefenders" class="size-3.5" />
+            </Link>
+          </div>
+        </div>
         <p class="font-mono text-xs sm:text-sm text-muted-foreground">
           Digital Forensics &bull; Incident Response &bull; Threat Hunting
         </p>
@@ -43,11 +66,14 @@ const recentPostsData = await Promise.all(
       <div>
         <Link
           href="/authors"
-          class="font-mono text-xs sm:text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 transition-colors"
+          class="font-mono text-xs sm:text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 transition-colors group"
         >
           <Icon name="lucide:user" class="size-4" />
           <span>About the author</span>
-          <Icon name="lucide:arrow-right" class="size-3.5" />
+          <Icon
+            name="lucide:arrow-right"
+            class="size-3.5 transition-transform group-hover:translate-x-0.5"
+          />
         </Link>
       </div>
     </section>
