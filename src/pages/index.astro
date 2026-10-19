@@ -1,222 +1,145 @@
 ---
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
-import { buttonVariants } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
-import { getAllPosts } from '@/lib/data-utils'
+import {
+  getAllPosts,
+  getPostReadingTime,
+  isCTFPost,
+  isLabPost,
+} from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
 
 const allPosts = await getAllPosts()
 const postCount = allPosts.length
+const labPosts = allPosts.filter(isLabPost)
+const ctfPosts = allPosts.filter(isCTFPost)
+const recentPosts = allPosts.slice(0, 8)
+
+const recentPostsData = await Promise.all(
+  recentPosts.map(async (post) => ({
+    post,
+    readingTime: await getPostReadingTime(post.id),
+    isLab: isLabPost(post),
+  })),
+)
 ---
 
 <Layout class="max-w-4xl">
   <PageHead slot="head" title="Home" />
 
-  <div class="space-y-8">
-    {/* Minimalist Modern Identity Hero */}
-    <section
-      class="rounded-xl border border-border bg-card/60 p-6 sm:p-8 space-y-6"
-    >
-      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-        {/* Avatar */}
-        <div class="relative shrink-0">
-          <div
-            class="size-20 sm:size-24 overflow-hidden rounded-xl border border-border bg-muted/30 p-1"
-          >
-            <img
-              src="/assets/avatar.jpg"
-              alt="ANe"
-              class="h-full w-full rounded-lg object-cover grayscale-[15%]"
-            />
-          </div>
-        </div>
-
-        {/* Identity Info */}
-        <div class="flex-1 space-y-2">
-          <div class="flex flex-wrap items-baseline gap-2.5">
-            <h1 class="font-mono text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              ANe
-            </h1>
-            <span class="font-mono text-xs text-muted-foreground">
-              (yuhrt05)
-            </span>
-            <span
-              class="rounded-md border border-border bg-muted/60 px-2.5 py-0.5 font-mono text-[11px] font-medium text-foreground/90"
-            >
-              4th-Year @ KMA
-            </span>
-            <span
-              class="rounded-md border border-border bg-muted/60 px-2.5 py-0.5 font-mono text-[11px] font-medium text-foreground/90"
-            >
-              DFIR Intern
-            </span>
-          </div>
-
-          <p class="font-mono text-xs text-foreground/80">
-            Digital Forensics &bull; Incident Response &bull; Threat Hunting
-          </p>
-
-          <div class="pt-1 text-sm leading-relaxed text-foreground/90">
-            <p>
-             Welcome to my blog, where I share what I learn in DFIR, malware analysis, and CTFs.
-            </p>
-          </div>
-        </div>
+  <div class="space-y-10 pt-2 sm:pt-4">
+    {/* Minimalist Header */}
+    <section class="space-y-3">
+      <div class="space-y-1.5">
+        <h1 class="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+          yuhrt05
+        </h1>
+        <p class="font-mono text-xs sm:text-sm text-muted-foreground">
+          Digital Forensics &bull; Incident Response &bull; Threat Hunting
+        </p>
       </div>
 
-      {/* Key Info Strip */}
-      <div
-        class="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-border/60 pt-4 font-mono text-xs"
-      >
-        <div class="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-1">
-          <div class="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wider">
-            <Icon name="lucide:graduation-cap" class="size-3" />
-            <span>Education</span>
-          </div>
-          <div class="text-sm font-semibold text-foreground">
-            4th-Year Student
-          </div>
-          <div class="text-[11px] text-muted-foreground leading-tight">
-            Academy of Cryptography Techniques (KMA)
-          </div>
-        </div>
-
-        <div class="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-1">
-          <div class="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wider">
-            <Icon name="lucide:briefcase" class="size-3" />
-            <span>Current Role</span>
-          </div>
-          <div class="text-sm font-semibold text-foreground">
-            DFIR Intern
-          </div>
-          <div class="text-[11px] text-muted-foreground leading-tight">
-            Vietnam National Cyber Security Technology (NCS)
-          </div>
-        </div>
-
-        <div class="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-1">
-          <div class="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wider">
-            <Icon name="lucide:file-text" class="size-3" />
-            <span>Research & Labs</span>
-          </div>
-          <div class="text-sm font-semibold text-foreground">
-            {postCount} Documented Cases
-          </div>
-          <div class="text-[11px] text-muted-foreground leading-tight">
-            DFIR &bull; CTF &bull; SIEM Labs
-          </div>
-        </div>
-      </div>
-
-      {/* Fast Action Buttons */}
-      <div class="flex flex-wrap items-center gap-2.5 pt-1">
+      <div>
         <Link
-          href="/blog"
-          class={buttonVariants({ variant: 'default', size: 'sm' }) +
-            ' font-mono text-xs'}
+          href="/authors"
+          class="font-mono text-xs sm:text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 transition-colors"
         >
-          <Icon name="lucide:file-text" class="size-3.5 mr-1.5" />
-          View All {postCount} Write-ups
-        </Link>
-
-        <Link
-          href="/tags"
-          class={buttonVariants({ variant: 'outline', size: 'sm' }) +
-            ' font-mono text-xs'}
-        >
-          <Icon name="lucide:hash" class="size-3.5 mr-1.5" />
-          Tags
-        </Link>
-
-        <Link
-          href="/archives"
-          class={buttonVariants({ variant: 'outline', size: 'sm' }) +
-            ' font-mono text-xs'}
-        >
-          <Icon name="lucide:calendar" class="size-3.5 mr-1.5" />
-          Archives
-        </Link>
-
-        <Link
-          href="https://github.com/yuhrt05"
-          class={buttonVariants({ variant: 'ghost', size: 'sm' }) +
-            ' font-mono text-xs text-muted-foreground hover:text-foreground'}
-          external
-        >
-          <Icon name="lucide:github" class="size-3.5 mr-1.5" />
-          GitHub
+          <Icon name="lucide:user" class="size-4" />
+          <span>About the author</span>
+          <Icon name="lucide:arrow-right" class="size-3.5" />
         </Link>
       </div>
     </section>
 
-    {/* Areas of Practice Section */}
-    <section
-      class="rounded-xl border border-border bg-card/40 p-6 sm:p-8 space-y-6"
-    >
-      <div class="space-y-1 font-mono">
-        <div class="text-[11px] text-muted-foreground uppercase tracking-wider">
-          Practice & Focus
-        </div>
-        <h2 class="text-lg font-semibold text-foreground tracking-tight">
-          What I Work On
-        </h2>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Domain 1 */}
-        <div class="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-2">
-          <div class="flex items-center gap-2 text-foreground font-mono text-xs font-semibold">
-            <span class="flex size-6 items-center justify-center rounded border border-border bg-muted/60 text-[11px]">
-              01
-            </span>
-            <span>Digital Forensics</span>
-          </div>
-          <p class="text-xs text-foreground/85 leading-relaxed">
-            Investigating Windows artifacts (Event Logs, Prefetch, Amcache, Registry, MFT/USN) and analyzing memory with Volatility to reconstruct incident timelines.
-          </p>
-        </div>
-
-        {/* Domain 2 */}
-        <div class="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-2">
-          <div class="flex items-center gap-2 text-foreground font-mono text-xs font-semibold">
-            <span class="flex size-6 items-center justify-center rounded border border-border bg-muted/60 text-[11px]">
-              02
-            </span>
-            <span>Threat Hunting & SIEM</span>
-          </div>
-          <p class="text-xs text-foreground/85 leading-relaxed">
-            Writing Sigma rules, building log ingestion pipelines, and setting up automated monitoring on ELK Stack and Wazuh. Working toward Detection-as-Code (DaC) workflows.
-          </p>
-        </div>
-
-        {/* Domain 3 */}
-        <div class="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-2">
-          <div class="flex items-center gap-2 text-foreground font-mono text-xs font-semibold">
-            <span class="flex size-6 items-center justify-center rounded border border-border bg-muted/60 text-[11px]">
-              03
-            </span>
-            <span>Malware Triage</span>
-          </div>
-          <p class="text-xs text-foreground/85 leading-relaxed">
-            Analyzing script-based loaders (batch, PowerShell, JavaScript), reversing C/C++ and .NET binaries, unpacking and decrypting in-memory payloads (e.g. Donut shellcode), and extracting C2 indicators and persistence mechanisms.
-          </p>
-        </div>
-      </div>
-
-      {/* Motto */}
-      <div class="border-t border-border/60 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-xs text-muted-foreground">
-        <p class="italic text-foreground/85">
-          &ldquo;A little each day adds up to a lot.&rdquo;
-        </p>
+    {/* Refined Minimalist Category Navigation */}
+    <section class="border-y border-border/40 py-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-0 font-mono text-xs sm:text-sm">
         <Link
-          href="/blog"
-          class="inline-flex items-center gap-1 text-foreground hover:underline transition-colors shrink-0"
+          href="/blog#labs"
+          class="group flex items-center justify-between text-muted-foreground hover:text-foreground transition-colors py-1 sm:pr-6"
         >
-          <span>Explore all write-ups</span>
-          <Icon name="lucide:arrow-right" class="size-3" />
+          <div class="flex items-center gap-2.5">
+            <Icon
+              name="lucide:flask-conical"
+              class="size-4 text-muted-foreground/80 group-hover:text-foreground transition-colors"
+            />
+            <span class="group-hover:underline font-medium">Labs &amp; Investigations</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-muted-foreground/70 group-hover:text-foreground">
+            <span>{labPosts.length} posts</span>
+            <Icon
+              name="lucide:arrow-right"
+              class="size-3 transition-transform group-hover:translate-x-0.5"
+            />
+          </div>
+        </Link>
+
+        <Link
+          href="/blog#ctf"
+          class="group flex items-center justify-between text-muted-foreground hover:text-foreground transition-colors py-1 sm:border-l sm:border-border/30 sm:pl-6"
+        >
+          <div class="flex items-center gap-2.5">
+            <Icon
+              name="lucide:flag"
+              class="size-4 text-muted-foreground/80 group-hover:text-foreground transition-colors"
+            />
+            <span class="group-hover:underline font-medium">CTF Forensics</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-muted-foreground/70 group-hover:text-foreground">
+            <span>{ctfPosts.length} posts</span>
+            <Icon
+              name="lucide:arrow-right"
+              class="size-3 transition-transform group-hover:translate-x-0.5"
+            />
+          </div>
         </Link>
       </div>
+    </section>
+
+    {/* Clean, Light Post List */}
+    <section class="space-y-3 pt-2">
+      <div class="flex items-center justify-between font-mono pb-1">
+        <span class="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          Recent Write-ups
+        </span>
+        <Link
+          href="/blog"
+          class="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          View all ({postCount}) &rarr;
+        </Link>
+      </div>
+
+      <ul class="divide-y divide-border/40 border-t border-b border-border/40 font-mono text-xs sm:text-sm">
+        {recentPostsData.map(({ post, readingTime, isLab }) => (
+          <li>
+            <Link
+              href={`/blog/${post.id}`}
+              class="group flex items-center justify-between gap-4 py-3.5 sm:py-4 transition-colors hover:text-foreground"
+            >
+              <div class="flex items-center gap-3.5 min-w-0">
+                <span class="text-xs text-muted-foreground shrink-0 w-16 sm:w-20">
+                  {post.data.date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
+                <span class="text-xs text-muted-foreground/70 shrink-0">
+                  [{isLab ? 'LAB' : 'CTF'}]
+                </span>
+                <span class="text-foreground/90 group-hover:text-foreground group-hover:underline truncate text-sm sm:text-base">
+                  {post.data.title}
+                </span>
+              </div>
+
+              <span class="text-xs text-muted-foreground shrink-0 hidden sm:inline">
+                {readingTime}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   </div>
 </Layout>

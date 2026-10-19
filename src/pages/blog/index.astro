@@ -23,10 +23,10 @@ const labsYears = Object.keys(labsByYear).sort((a, b) => parseInt(b) - parseInt(
 ---
 
 <Layout class="max-w-4xl">
-  <PageHead slot="head" title="Articles & Write-ups" />
+  <PageHead slot="head" title="Write-ups" />
   <Breadcrumbs
     items={[
-      { label: 'Blog', href: '/blog', icon: 'lucide:library-big' },
+      { label: 'Write-ups', href: '/blog', icon: 'lucide:file-text' },
       { label: 'All', icon: 'lucide:book-copy' },
     ]}
   />
@@ -36,7 +36,7 @@ const labsYears = Object.keys(labsByYear).sort((a, b) => parseInt(b) - parseInt(
     <div class="flex flex-col gap-y-2 font-mono">
       <div class="flex items-center gap-2">
         <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground uppercase">
-          Articles & Write-ups
+          Write-ups
         </h1>
       </div>
       <p class="text-xs text-muted-foreground">

@@ -1,68 +1,131 @@
 ---
-import AuthorCard from '@/components/AuthorCard.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
-import SocialStatus from '@/components/SocialStatus'
 import Layout from '@/layouts/Layout.astro'
-import { getAllAuthors } from '@/lib/data-utils'
+import { getAllPosts } from '@/lib/data-utils'
+import { Icon } from 'astro-icon/components'
 
-const authors = await getAllAuthors()
-const author = authors?.[0]
+const allPosts = await getAllPosts()
+const postCount = allPosts.length
 ---
 
 <Layout class="max-w-4xl">
-  <PageHead slot="head" title="Security Researcher Dossier" />
-  <Breadcrumbs items={[{ label: 'Authors', icon: 'lucide:users' }]} />
+  <PageHead slot="head" title="About" />
+  <Breadcrumbs items={[{ label: 'About', icon: 'lucide:user' }]} />
 
-  <div class="flex flex-col gap-y-6">
-    <div class="flex flex-col gap-y-1 font-mono">
-      <div class="flex items-center gap-2">
-        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground uppercase">
-          About the Author
-        </h1>
+  <div class="pt-2 sm:pt-4">
+    {/* Author Dossier Card */}
+    <section class="rounded-2xl border border-border/70 bg-card/40 p-6 sm:p-8 space-y-6 shadow-sm">
+      {/* Profile Header */}
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6">
+        <div class="size-20 sm:size-24 shrink-0 overflow-hidden rounded-2xl border border-border bg-muted/20 p-1">
+          <img
+            src="/assets/avatar.jpg"
+            alt="ANe"
+            class="h-full w-full rounded-xl object-cover grayscale-[10%]"
+          />
+        </div>
+
+        <div class="space-y-1.5 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2.5">
+            <h1 class="font-mono text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              ANe
+            </h1>
+            <span class="font-mono text-xs text-muted-foreground">
+              (yuhrt05)
+            </span>
+          </div>
+
+          <p class="font-mono text-xs sm:text-sm text-muted-foreground italic">
+            &ldquo;A little each day adds up to a lot.&rdquo;
+          </p>
+        </div>
       </div>
-      <p class="text-xs text-muted-foreground">
-        Identity, research focus, and security operations profile.
-      </p>
-    </div>
 
-    {
-      authors.length > 0 ? (
-        <ul class="flex flex-col gap-4">
-          {authors.map((author) => (
-            <li>
-              <AuthorCard author={author} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p class="text-muted-foreground text-center font-mono text-xs">No authors found.</p>
-      )
-    }
-
-    {
-      author && (
-        <section class="rounded-xl border border-border bg-card/40 p-6 space-y-4">
-          <div class="flex items-center justify-between border-b border-border/50 pb-3 font-mono">
-            <h2 class="text-sm font-semibold tracking-wider text-foreground uppercase">
-              About {author.data.name}
-            </h2>
-            <span class="text-xs text-muted-foreground">SOC &bull; DFIR &bull; RE</span>
+      {/* 3 Metric Cards - Bé bé xinh xinh, phông sau nhám nhám (Frosted Glass) */}
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-3.5 font-mono">
+        <div class="rounded-xl border border-border/70 dark:border-white/[0.08] bg-muted/30 dark:bg-muted/15 backdrop-blur-md p-3.5 sm:p-4 space-y-2 hover:border-foreground/30 transition-all shadow-sm">
+          <div class="flex items-center gap-1.5 text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">
+            <Icon name="lucide:graduation-cap" class="size-3.5 text-muted-foreground" />
+            <span>EDUCATION</span>
           </div>
-
-          <div class="space-y-3 text-xs leading-relaxed text-muted-foreground font-sans">
-            <p>
-              Hi, I'm <strong class="text-foreground font-mono">ANe</strong> (yuhrt05) — a student interested in Blue Team operations and Digital Forensics & Incident Response (DFIR).
-            </p>
-            <p>
-              I’m learning how attackers operate so I can better understand detection, malware behavior, and SIEM triage.
-            </p>
-            <p class="font-mono text-muted-foreground text-xs pt-1 italic">
-              &gt; "A little each day adds up to a lot."
+          <div class="space-y-0.5">
+            <div class="text-sm sm:text-[15px] font-bold text-foreground tracking-tight">
+              4th-Year Student
+            </div>
+            <p class="text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
+              Academy of Cryptography Techniques (KMA)
             </p>
           </div>
-        </section>
-      )
-    }
+        </div>
+
+        <div class="rounded-xl border border-border/70 dark:border-white/[0.08] bg-muted/30 dark:bg-muted/15 backdrop-blur-md p-3.5 sm:p-4 space-y-2 hover:border-foreground/30 transition-all shadow-sm">
+          <div class="flex items-center gap-1.5 text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">
+            <Icon name="lucide:briefcase" class="size-3.5 text-muted-foreground" />
+            <span>CURRENT ROLE</span>
+          </div>
+          <div class="space-y-0.5">
+            <div class="text-sm sm:text-[15px] font-bold text-foreground tracking-tight">
+              DFIR Intern
+            </div>
+            <p class="text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
+              Vietnam National Cyber Security Technology (NCS)
+            </p>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-border/70 dark:border-white/[0.08] bg-muted/30 dark:bg-muted/15 backdrop-blur-md p-3.5 sm:p-4 space-y-2 hover:border-foreground/30 transition-all shadow-sm">
+          <div class="flex items-center gap-1.5 text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">
+            <Icon name="lucide:file-text" class="size-3.5 text-muted-foreground" />
+            <span>RESEARCH &amp; LABS</span>
+          </div>
+          <div class="space-y-0.5">
+            <div class="text-sm sm:text-[15px] font-bold text-foreground tracking-tight">
+              {postCount} Documented Cases
+            </div>
+            <p class="text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
+              DFIR &bull; CTF &bull; SIEM Labs
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Buttons Row */}
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <Link
+          href="/blog"
+          class="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 font-mono text-xs font-semibold text-background transition-opacity hover:opacity-90"
+        >
+          <Icon name="lucide:file-text" class="size-4" />
+          <span>View All {postCount} Write-ups</span>
+        </Link>
+
+        <Link
+          href="/tags"
+          class="inline-flex items-center gap-2 rounded-lg border border-border/80 bg-muted/20 px-3.5 py-2 font-mono text-xs text-foreground/80 hover:bg-muted/40 hover:text-foreground transition-colors"
+        >
+          <Icon name="lucide:hash" class="size-3.5" />
+          <span>Tags</span>
+        </Link>
+
+        <Link
+          href="/archive"
+          class="inline-flex items-center gap-2 rounded-lg border border-border/80 bg-muted/20 px-3.5 py-2 font-mono text-xs text-foreground/80 hover:bg-muted/40 hover:text-foreground transition-colors"
+        >
+          <Icon name="lucide:calendar" class="size-3.5" />
+          <span>Archives</span>
+        </Link>
+
+        <Link
+          href="https://github.com/yuhrt05"
+          class="inline-flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 font-mono text-xs text-muted-foreground hover:text-foreground transition-colors"
+          external
+        >
+          <Icon name="lucide:github" class="size-3.5" />
+          <span>GitHub</span>
+        </Link>
+      </div>
+    </section>
   </div>
 </Layout>
