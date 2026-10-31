@@ -236,12 +236,12 @@ const isPasswordProtected = !!post.data.password
 
     {isPasswordProtected ? (
       <PasswordGate client:load password={post.data.password!} postId={currentPostId}>
-        <article class="prose col-start-2 max-w-none">
+        <article class="prose col-start-2 max-w-none min-w-0">
           <Content />
         </article>
       </PasswordGate>
     ) : (
-      <article class="prose col-start-2 max-w-none">
+      <article class="prose col-start-2 max-w-none min-w-0">
         <Content />
       </article>
     )}
